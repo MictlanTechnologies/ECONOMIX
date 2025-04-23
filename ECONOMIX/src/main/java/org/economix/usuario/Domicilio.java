@@ -1,4 +1,4 @@
-package org.economix.gastos;
+package org.economix.usuario;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,11 +17,11 @@ y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
  */
 @ToString(callSuper = true) //Creador de ToString
 @Entity //Le dice a Hibernate que esto es una entidad
-@Table( name="TBL_GASTOS" ) // Le dice a Hibernate a qué tabla de la BD refiere
+@Table( name="TBL_DOMICILIO" ) // Le dice a Hibernate a qué tabla de la BD refiere
 
-public class Gastos extends Catalogo implements Serializable
+public class Domicilio extends Catalogo implements Serializable
 {
-    @Column(name = "GASTOS", nullable = false )
+    @Column(name = "DOMICILIO", nullable = false )
     private String gastos;
 
     public static Ejecutable getInstance() {

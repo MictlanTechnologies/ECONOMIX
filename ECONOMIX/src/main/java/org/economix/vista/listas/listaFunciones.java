@@ -3,6 +3,8 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
+import org.economix.sql.hibernateimpl.GastosHiberImpl;
+import org.economix.vista.catalogos.gastosCatalogo;
 
 public class listaFunciones extends leerAcciones
 {
@@ -49,8 +51,8 @@ public class listaFunciones extends leerAcciones
         switch(opcion)
         {
             case 1:
-                ejecutable = ingresosCatalogo.getInstance();
-                break;
+            flag = false;
+            break;
             case 2:
                 ejecutable = gastosCatalogo.getInstance();
                 break;

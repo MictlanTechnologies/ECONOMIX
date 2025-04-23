@@ -1,67 +1,57 @@
 package org.economix.sql.hibernateimpl;
 
-import org.floresmateo.hibernate.HibernateUtil;
-import org.floresmateo.model.Estado;
-import org.floresmateo.sql.GenericSql;
+import org.economix.hibernate.HibernateUtil;
+import org.economix.gastos.Gastos;
+import org.economix.sql.GenericSql;
+import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
 import java.util.List;
-//DEJO ESTA CLASE COMO EJEMPLO PARA CREAR LAS DEMÁS
-public class EstadoHiberImpl implements GenericSql<Estado>
-{
-    private static EstadoHiberImpl estadoHiber;
 
-    private EstadoHiberImpl()
-    {
+public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
+    private static GastosHiberImpl gastosHiber;
+
+    private GastosHiberImpl() {
     }
 
-    public static EstadoHiberImpl getInstance()
-    {
-        if( estadoHiber == null )
-        {
-            estadoHiber = new EstadoHiberImpl();
+    public static GastosHiberImpl getInstance() {
+        if (gastosHiber == null) {
+            gastosHiber = new GastosHiberImpl();
         }
-        return estadoHiber;
+        return gastosHiber;
     }
 
 
     @Override
-    public List<Estado> findAll()
-    {
+    public List<Gastos> findAll() {
         Session session = HibernateUtil.getSession();
-        if(session == null)
-        {
+        if (session == null) {
             System.out.println("ERROR DE CONEXION");
             return null;
         }
-        List<Estado> list = session
-                .createQuery("FROM Estado", Estado.class )
+        List<Gastos> list = session
+                .createQuery("FROM GASTOS", Gastos.class)
                 .getResultList();
-
         session.close();
         return list;
     }
 
     @Override
-    public boolean save(Estado estado)
-    {
+    public boolean save(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction(); //Crea un conjunto de instrucciones
-
-        session.persist(estado);
+        session.persist(gastos);
         session.getTransaction().commit(); //Crea un commit de todo el conjunto de instrucciones
-
         session.close();
         return true;
     }
 
     @Override
-    public boolean update(Estado estado)
-    {
+    public boolean update(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
 
-        session.merge(estado);
+        session.merge(gastos);
         session.getTransaction().commit();
 
         session.close();
@@ -69,27 +59,31 @@ public class EstadoHiberImpl implements GenericSql<Estado>
     }
 
     @Override
-    public boolean delete(Estado estado)
-    {
+    public boolean delete(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-
-        session.remove(estado);
+        session.remove(gastos);
         session.getTransaction().commit();
-
         session.close();
         return true;
     }
 
     @Override
-    public Estado findById(Integer id)
-    {
+    public Gastos findById(Integer id) {
         Session session = HibernateUtil.getSession();
-
-        Estado estado = session
-                .get( Estado.class, id );
-
+        Gastos gastos = session.get(Gastos.class, id);
         session.close();
-        return estado;
+        return gastos;
+    }
+
+    @Override
+    public void run() {
+
+    }
+
+    @Override
+    public void setFlag(boolean flag) {
+
     }
 }
+

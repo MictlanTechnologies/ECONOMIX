@@ -2,17 +2,17 @@ package org.economix.vista.acciones;
 
 import org.economix.model.Catalogo;
 import org.economix.sql.GenericSql;
-
+import org.economix.util.readUtil;
 import java.util.List;
 
-public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
+public abstract class gestorCatalogos<T extends Catalogo> extends leerAcciones
 {
     protected List<T> list;
     protected T t;
     protected boolean flag2;
     protected GenericSql<T> genericSql;
 
-    public GestorCatalogos(GenericSql<T> genericSql)
+    public gestorCatalogos(GenericSql<T> genericSql)
     {
         this.genericSql = genericSql;
     }
@@ -55,7 +55,7 @@ public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
             System.out.print( "> Ingrese el ID del elemento a editar: " );
 
             t = list.stream()
-                    .filter( e -> e.getId().equals( ReadUtil.readInt( ) ) )
+                    .filter( e -> e.getId().equals( readUtil.readInt( ) ) )
                     .findFirst()
                     .orElse( null );
 
@@ -63,7 +63,7 @@ public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
             {
                 System.out.println( "> No se encontró el elemento." );
                 System.out.print( "> Deseas volver a intentarlo? s/n: ");
-                String respuesta = ReadUtil.read();
+                String respuesta = readUtil.read();
 
                 flag2 = respuesta.equalsIgnoreCase("S");
             }
@@ -93,7 +93,7 @@ public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
             System.out.print( "> Ingrese el ID del elemento a eliminar: " );
 
             t = list.stream()
-                    .filter( e -> e.getId().equals( ReadUtil.readInt( ) ) )
+                    .filter( e -> e.getId().equals( readUtil.readInt( ) ) )
                     .findFirst()
                     .orElse( null );
 
@@ -101,7 +101,7 @@ public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
             {
                 System.out.println( "> No se encontró el elemento." );
                 System.out.print( "> Deseas volver a intentarlo? s/n: ");
-                String respuesta = ReadUtil.read();
+                String respuesta = readUtil.read();
 
                 flag2 = respuesta.equalsIgnoreCase("S");
             }
@@ -119,7 +119,7 @@ public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
     public void findById()
     {
         System.out.print("> Ingresa un ID para buscar: ");
-        t = genericSql.findById( ReadUtil.readInt() );
+        t = genericSql.findById( readUtil.readInt() );
 
         if(t!=null)
         {
@@ -134,7 +134,7 @@ public abstract class GestorCatalogos<T extends Catalogo> extends LeerAcciones
     @Override
     public void despliegaMenu()
     {
-        System.out.println("\n\t:: Gestión de catálogos ::");
+        System.out.println("\n\t:: Gestión de Gastos ::");
         System.out.println("Seleccione una opción:");
         System.out.println("1.- Agregar");
         System.out.println("2.- Eliminar");
