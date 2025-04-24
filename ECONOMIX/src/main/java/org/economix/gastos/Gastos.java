@@ -21,7 +21,7 @@ y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
 
 public class Gastos extends Catalogo implements Serializable
 {
-    @Column(name = "GASTOS", nullable = false )
+    @Column(name = "artículoGasto", nullable = false )
     private String gastos;
 
     public static Ejecutable getInstance() {

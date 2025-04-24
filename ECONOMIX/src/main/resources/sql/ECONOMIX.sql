@@ -21,11 +21,11 @@ SHOW WARNINGS;
 USE `economix` ;
 
 -- -----------------------------------------------------
--- Table `economix`.`usuario`
+-- Table `economix`.`tbl_usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`usuario` (
-  `idUsuario` INT NOT NULL,
-  `nombreUsuario` VARCHAR(100) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_usuario` (
+  `idUsuario` INT NOT NULL AUTO_INCREMENT,
+  `perfilUsuario` VARCHAR(50) NULL DEFAULT NULL,
   `contraseñaUsuario` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`idUsuario`))
 ENGINE = InnoDB
@@ -35,182 +35,182 @@ COLLATE = utf8mb4_0900_ai_ci;
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`gastos`
+-- Table `economix`.`tbl_gastos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`gastos` (
-  `idGastos` INT NOT NULL,
-  `descripcionGasto` VARCHAR(200) NULL DEFAULT NULL,
-  `articuloGasto` VARCHAR(100) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_gastos` (
+	`idGastos` INT NOT NULL AUTO_INCREMENT,
+  `descripciónGasto` TEXT NULL DEFAULT NULL,
+  `artículoGasto` VARCHAR(100) NULL DEFAULT NULL,
   `montoGasto` DECIMAL(10,2) NULL DEFAULT NULL,
   `fechaGastos` DATE NULL DEFAULT NULL,
   `periodoGastos` VARCHAR(50) NULL DEFAULT NULL,
   `idUsuario` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idGastos`),
-  CONSTRAINT `gastos_ibfk_1`
+  CONSTRAINT `tbl_gastos_ibfk_1`
     FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`usuario` (`idUsuario`))
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`gastos` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idUsuario` ON `economix`.`tbl_gastos` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`conceptogastos`
+-- Table `economix`.`tbl_conceptogastos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`conceptogastos` (
-  `idConcepto` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_conceptogastos` (
+  `idConcepto` INT NOT NULL AUTO_INCREMENT,
   `nombreConcepto` VARCHAR(100) NULL DEFAULT NULL,
-  `descripcionConcepto` VARCHAR(200) NULL DEFAULT NULL,
+  `descripciónConcepto` TEXT NULL DEFAULT NULL,
   `precioConcepto` DECIMAL(10,2) NULL DEFAULT NULL,
   `idGastos` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idConcepto`),
-  CONSTRAINT `conceptogastos_ibfk_1`
+  CONSTRAINT `tbl_conceptogastos_ibfk_1`
     FOREIGN KEY (`idGastos`)
-    REFERENCES `economix`.`gastos` (`idGastos`))
+    REFERENCES `economix`.`tbl_gastos` (`idGastos`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idGastos` ON `economix`.`conceptogastos` (`idGastos` ASC) VISIBLE;
+CREATE INDEX `idGastos` ON `economix`.`tbl_conceptogastos` (`idGastos` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`ingresos`
+-- Table `economix`.`tbl_ingresos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`ingresos` (
-  `idIngresos` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_ingresos` (
+  `idIngresos` INT NOT NULL AUTO_INCREMENT,
   `montoIngreso` DECIMAL(10,2) NULL DEFAULT NULL,
   `periodicidadIngreso` VARCHAR(50) NULL DEFAULT NULL,
   `fechaIngresos` DATE NULL DEFAULT NULL,
-  `descripcionIngreso` VARCHAR(200) NULL DEFAULT NULL,
+  `descripcionIngreso` TEXT NULL DEFAULT NULL,
   `idUsuario` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idIngresos`),
-  CONSTRAINT `ingresos_ibfk_1`
+  CONSTRAINT `tbl_ingresos_ibfk_1`
     FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`usuario` (`idUsuario`))
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`ingresos` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idUsuario` ON `economix`.`tbl_ingresos` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`conceptoingresos`
+-- Table `economix`.`tbl_conceptoingresos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`conceptoingresos` (
-  `idConcepto` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_conceptoingresos` (
+  `idConcepto` INT NOT NULL AUTO_INCREMENT,
   `nombreConcepto` VARCHAR(100) NULL DEFAULT NULL,
-  `descripcionConcepto` VARCHAR(200) NULL DEFAULT NULL,
+  `descripcionConcepto` TEXT NULL DEFAULT NULL,
   `precioConcepto` DECIMAL(10,2) NULL DEFAULT NULL,
   `idIngresos` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idConcepto`),
-  CONSTRAINT `conceptoingresos_ibfk_1`
+  CONSTRAINT `tbl_conceptoingresos_ibfk_1`
     FOREIGN KEY (`idIngresos`)
-    REFERENCES `economix`.`ingresos` (`idIngresos`))
+    REFERENCES `economix`.`tbl_ingresos` (`idIngresos`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idIngresos` ON `economix`.`conceptoingresos` (`idIngresos` ASC) VISIBLE;
+CREATE INDEX `idIngresos` ON `economix`.`tbl_conceptoingresos` (`idIngresos` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`contactos`
+-- Table `economix`.`tbl_contactos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`contactos` (
-  `idContactos` INT NOT NULL,
-  `numCelular` VARCHAR(15) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_contactos` (
+  `idContactos` INT NOT NULL AUTO_INCREMENT,
+  `numCelular` VARCHAR(20) NULL DEFAULT NULL,
   `Correo` VARCHAR(100) NULL DEFAULT NULL,
   `idUsuario` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idContactos`),
-  CONSTRAINT `contactos_ibfk_1`
+  CONSTRAINT `tbl_contactos_ibfk_1`
     FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`usuario` (`idUsuario`))
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`contactos` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idUsuario` ON `economix`.`tbl_contactos` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`domicilio`
+-- Table `economix`.`tbl_domicilio`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`domicilio` (
-  `idDomicilio` INT NOT NULL,
-  `Ciudad` VARCHAR(100) NULL DEFAULT NULL,
-  `Calle` VARCHAR(100) NULL DEFAULT NULL,
-  `Colonia` VARCHAR(100) NULL DEFAULT NULL,
-  `Número` VARCHAR(10) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_domicilio` (
+  `idDomicilio` INT NOT NULL AUTO_INCREMENT,
+  `ciudad` VARCHAR(50) NULL DEFAULT NULL,
+  `calle` VARCHAR(100) NULL DEFAULT NULL,
+  `colonia` VARCHAR(100) NULL DEFAULT NULL,
+  `número` VARCHAR(10) NULL DEFAULT NULL,
   `idUsuario` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idDomicilio`),
-  CONSTRAINT `domicilio_ibfk_1`
+  CONSTRAINT `tbl_domicilio_ibfk_1`
     FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`usuario` (`idUsuario`))
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`domicilio` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idUsuario` ON `economix`.`tbl_domicilio` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`nombrepersona`
+-- Table `economix`.`tbl_nombreusuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`nombrepersona` (
-  `idNombrePersona` INT NOT NULL,
-  `Nombre` VARCHAR(100) NULL DEFAULT NULL,
-  `apellidoP` VARCHAR(100) NULL DEFAULT NULL,
-  `apellidoM` VARCHAR(100) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_nombreusuario` (
+  `idNombre` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(50) NULL DEFAULT NULL,
+  `apellidoP` VARCHAR(50) NULL DEFAULT NULL,
+  `apellidoM` VARCHAR(50) NULL DEFAULT NULL,
   `idUsuario` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`idNombrePersona`),
-  CONSTRAINT `nombrepersona_ibfk_1`
+  PRIMARY KEY (`idNombre`),
+  CONSTRAINT `tbl_nombreusuario_ibfk_1`
     FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`usuario` (`idUsuario`))
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`nombrepersona` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idUsuario` ON `economix`.`tbl_nombreusuario` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`presupuesto`
+-- Table `economix`.`tbl_presupuesto`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`presupuesto` (
-  `idPresupuesto` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_presupuesto` (
+  `idPresupuesto` INT NOT NULL AUTO_INCREMENT,
   `fechaPresupuesto` DATE NULL DEFAULT NULL,
   `fechaActualizaciónP` DATE NULL DEFAULT NULL,
   `periodoTPresupuesto` VARCHAR(50) NULL DEFAULT NULL,
   `montoPresupuesto` DECIMAL(10,2) NULL DEFAULT NULL,
   `idIngresos` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idPresupuesto`),
-  CONSTRAINT `presupuesto_ibfk_1`
+  CONSTRAINT `tbl_presupuesto_ibfk_1`
     FOREIGN KEY (`idIngresos`)
-    REFERENCES `economix`.`ingresos` (`idIngresos`))
+    REFERENCES `economix`.`tbl_ingresos` (`idIngresos`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idIngresos` ON `economix`.`presupuesto` (`idIngresos` ASC) VISIBLE;
+CREATE INDEX `idIngresos` ON `economix`.`tbl_presupuesto` (`idIngresos` ASC) VISIBLE;
 
 SHOW WARNINGS;
 

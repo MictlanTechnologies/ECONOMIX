@@ -8,7 +8,7 @@ import org.economix.vista.acciones.gestorCatalogos;
 
 public class domicilioCatalogo extends gestorCatalogos<Domicilio> {
     private static domicilioCatalogo domicilioCatalogo;
-    private static final GenericSql<Domicilio> domicilioGenericSql = DomicilioHiberImpl.getInstance();
+    private static final GenericSql<Domicilio> domicilioHiber = DomicilioHiberImpl.getInstance();
 
     public static domicilioCatalogo getInstance() {
         if (domicilioCatalogo == null) {
@@ -29,16 +29,16 @@ public class domicilioCatalogo extends gestorCatalogos<Domicilio> {
     @Override
     public boolean processNewT(Domicilio domicilio) {
         System.out.print("> Teclee el nombre del gasto: ");
-        domicilio.setGastos(readUtil.read());
-        domicilioGenericSql.save(domicilio);
+        domicilio.setDomicilio(readUtil.read());
+        domicilioHiber.save(domicilio);
         return true;
     }
 
     @Override
     public boolean processEditT(Domicilio domicilio) {
         System.out.print("> Ingrese el nuevo nombre del gasto: ");
-        domicilio.setGastos( readUtil.read() );
-        domicilioGenericSql.update(domicilio);
+        domicilio.setDomicilio( readUtil.read() );
+        domicilioHiber.update(domicilio);
         return true;
     }
 }

@@ -30,7 +30,7 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
             return null;
         }
         List<Gastos> list = session
-                .createQuery("FROM GASTOS", Gastos.class)
+                .createQuery("FROM Gastos", Gastos.class)
                 .getResultList();
         session.close();
         return list;
@@ -50,10 +50,8 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
     public boolean update(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-
         session.merge(gastos);
         session.getTransaction().commit();
-
         session.close();
         return true;
     }

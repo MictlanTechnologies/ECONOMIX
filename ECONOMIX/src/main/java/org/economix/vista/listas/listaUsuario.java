@@ -4,6 +4,9 @@ import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
 import org.economix.vista.catalogos.domicilioCatalogo;
+import org.economix.vista.catalogos.personaCatalogo;
+import org.economix.vista.catalogos.usuarioCatalogo;
+import org.economix.vista.catalogos.contactoCatalogo;
 
 public class listaUsuario extends leerAcciones
 {
@@ -62,7 +65,7 @@ public class listaUsuario extends leerAcciones
                 ejecutable = domicilioCatalogo.getInstance();
                 break;
             case 4:
-                ejecutable = contatoCatalogo.getInstance();
+                ejecutable = contactoCatalogo.getInstance();
                 break;
             case 5:
                 flag=false;

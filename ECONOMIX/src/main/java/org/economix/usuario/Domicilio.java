@@ -17,12 +17,12 @@ y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
  */
 @ToString(callSuper = true) //Creador de ToString
 @Entity //Le dice a Hibernate que esto es una entidad
-@Table( name="TBL_DOMICILIO" ) // Le dice a Hibernate a qué tabla de la BD refiere
+@Table( name="DOMICILIO" ) // Le dice a Hibernate a qué tabla de la BD refiere
 
 public class Domicilio extends Catalogo implements Serializable
 {
     @Column(name = "DOMICILIO", nullable = false )
-    private String gastos;
+    private String domicilio;
 
     public static Ejecutable getInstance() {
         return null;
