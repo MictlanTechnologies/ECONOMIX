@@ -21,5 +21,9 @@
 		<property name="hbm2ddl.auto">none</property>
 		<property name="hibernate.transform_hbm_xml.enabled">true</property>
 		<mapping class="org.economix.gastos.Gastos"/>
-    </session-factory>
+		<mapping class="org.economix.usuario.Contacto"/>
+		<mapping class="org.economix.usuario.Domicilio"/>
+		<mapping class="org.economix.usuario.Persona"/>
+		<mapping class="org.economix.usuario.Usuario"/>
+	</session-factory>
 </hibernate-configuration>

@@ -24,6 +24,7 @@ public class Domicilio extends Catalogo implements Serializable
     @Column(name = "DOMICILIO", nullable = false )
     private String domicilio;
 
+    @Column( name = "")
     public static Ejecutable getInstance() {
         return null;
     }
