@@ -25,8 +25,8 @@ USE `economix` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `economix`.`tbl_usuario` (
   `idUsuario` INT NOT NULL AUTO_INCREMENT,
-  `perfilUsuario` VARCHAR(50) NULL DEFAULT NULL,
-  `contraseñaUsuario` VARCHAR(100) NULL DEFAULT NULL,
+  `perfilUsuario` VARCHAR(50) NOT NULL,
+  `contraseñaUsuario` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -39,12 +39,12 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `economix`.`tbl_gastos` (
 	`idGastos` INT NOT NULL AUTO_INCREMENT,
-  `descripciónGasto` TEXT NULL DEFAULT NULL,
-  `artículoGasto` VARCHAR(100) NULL DEFAULT NULL,
-  `montoGasto` DECIMAL(10,2) NULL DEFAULT NULL,
-  `fechaGastos` DATE NULL DEFAULT NULL,
-  `periodoGastos` VARCHAR(50) NULL DEFAULT NULL,
-  `idUsuario` INT NULL DEFAULT NULL,
+  `descripciónGasto` TEXT NOT NULL,
+  `artículoGasto` VARCHAR(100) NOT NULL,
+  `montoGasto` DECIMAL(10,2) NOT NULL,
+  `fechaGastos` DATE NOT NULL,
+  `periodoGastos` VARCHAR(50) NOT NULL,
+  `idUsuario` INT NOT NULL,
   PRIMARY KEY (`idGastos`),
   CONSTRAINT `tbl_gastos_ibfk_1`
     FOREIGN KEY (`idUsuario`)

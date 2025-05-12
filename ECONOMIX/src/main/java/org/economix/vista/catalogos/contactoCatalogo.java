@@ -29,7 +29,7 @@ public class contactoCatalogo extends gestorCatalogos<Contacto> {
     @Override
     public boolean processNewT(Contacto contacto) {
         System.out.print("> Teclee el nombre del gasto: ");
-        contacto.setContactos(readUtil.read());
+        contacto.setNumCelular(readUtil.read());
         contactoHiber.save(contacto);
         return true;
     }
@@ -37,7 +37,7 @@ public class contactoCatalogo extends gestorCatalogos<Contacto> {
     @Override
     public boolean processEditT(Contacto contacto) {
         System.out.print("> Ingrese el nuevo nombre del gasto: ");
-        contacto.setContactos( readUtil.read() );
+        contacto.setNumCelular( readUtil.read() );
         contactoHiber.update(contacto);
         return true;
     }

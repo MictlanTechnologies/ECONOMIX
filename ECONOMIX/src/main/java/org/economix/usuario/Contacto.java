@@ -19,18 +19,16 @@ y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
 @Entity //Le dice a Hibernate que esto es una entidad
 @Table( name="TBL_CONTACTOS" ) // Le dice a Hibernate a qué tabla de la BD refiere
 
-public class Contacto extends Catalogo implements Serializable
-{
-    @Column(name = "numCelular", nullable = false )
+// … imports y anotaciones sin cambios …
+public class Contacto extends Catalogo implements Serializable {
+
+    @Column(name = "numCelular", nullable = false, length = 20)
     private String numCelular;
 
-    @Column(name = "Correo", nullable = false)
-    private String Correo;
+    @Column(name = "correo", nullable = false, length = 120)
+    private String correo;
 
     @ManyToOne
-    @JoinColumn( name = "TBL_USUARiO_idUsuario")
+    @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
-    public static Ejecutable getInstance() {
-        return null;
-    }
 }

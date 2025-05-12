@@ -1,6 +1,7 @@
 package org.economix.util;
 import org.economix.vista.acciones.Menu;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class readUtil {
@@ -78,5 +79,15 @@ public class readUtil {
         } catch (Exception e) {
         }
         return null;
+    }
+    public static BigDecimal readBigDecimal() {
+        while (true) {
+            String in = scanner.nextLine().trim();
+            try {
+                return new BigDecimal(in);
+            } catch (NumberFormatException ex) {
+                System.out.print("> Formato numérico inválido. Intenta de nuevo: ");
+            }
+        }
     }
 }

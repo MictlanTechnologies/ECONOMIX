@@ -3,12 +3,11 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
-import org.economix.sql.hibernateimpl.GastosHiberImpl;
 import org.economix.vista.catalogos.gastosCatalogo;
 
 public class listaFunciones extends leerAcciones
 {
-    private static listaFunciones listaDisco;
+    private static listaFunciones listaFunciones;
 
     private listaFunciones()
     {
@@ -16,11 +15,11 @@ public class listaFunciones extends leerAcciones
 
     public static listaFunciones getInstance()
     {
-        if(listaDisco==null)
+        if(listaFunciones ==null)
         {
-            listaDisco = new listaFunciones();
+            listaFunciones = new listaFunciones();
         }
-        return listaDisco;
+        return listaFunciones;
     }
 
     @Override

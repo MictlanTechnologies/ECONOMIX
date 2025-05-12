@@ -10,12 +10,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-
-public abstract class Catalogo implements Serializable
-{
+public abstract class Catalogo implements Serializable {
+    /** NO pongas @Column aquí; el nombre se define en cada entidad */
     @Id
-    @Column (name = "ID")
-    @GeneratedValue (strategy = GenerationType.IDENTITY )
-    protected Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 }
+
+
 

@@ -6,6 +6,7 @@ import org.economix.sql.GenericSql;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
@@ -23,18 +24,19 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
 
 
     @Override
-    public List<Gastos> findAll() {
+    public List<Gastos> findAll() {           // ← cambia Entidad por el tipo correcto
         Session session = HibernateUtil.getSession();
         if (session == null) {
             System.out.println("ERROR DE CONEXION");
-            return null;
+            return new ArrayList<>();
         }
         List<Gastos> list = session
-                .createQuery("FROM Gastos", Gastos.class)
+                .createQuery("FROM Gastos", Gastos.class)   // ← usa el nombre de la CLASE, no de la tabla
                 .getResultList();
         session.close();
         return list;
     }
+
 
     @Override
     public boolean save(Gastos gastos) {
@@ -59,12 +61,24 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
     @Override
     public boolean delete(Gastos gastos) {
         Session session = HibernateUtil.getSession();
+        if (session == null) {
+            System.out.println("ERROR DE CONEXION");
+            return false;
+        }
+
         session.beginTransaction();
-        session.remove(gastos);
+        // ① Carga el managed entity dentro de la misma sesión
+        Gastos managed = session.get(Gastos.class, gastos.getId());
+        if (managed != null) {
+            session.remove(managed);
+        } else {
+            System.out.println("> El gasto ya no existe en BD");
+        }
         session.getTransaction().commit();
         session.close();
         return true;
     }
+
 
     @Override
     public Gastos findById(Integer id) {

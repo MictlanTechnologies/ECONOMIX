@@ -78,14 +78,13 @@ public abstract class gestorCatalogos<T extends Catalogo> extends leerAcciones
         }
     }
 
-    public void remove( )
-    {
+    public void remove() {
         List<T> list = genericSql.findAll();
-        if( list.isEmpty( ) )
-        {
-            System.out.println( ">  No hay elementos para eliminar." );
+        if (list == null || list.isEmpty()) {
+            System.out.println(">  No hay elementos para eliminar.");
             return;
         }
+        // resto del código sin cambios …
         flag2 = true;
         while ( flag2 )
         {

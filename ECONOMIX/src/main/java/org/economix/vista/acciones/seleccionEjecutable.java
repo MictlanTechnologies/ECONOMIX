@@ -1,7 +1,6 @@
 package org.economix.vista.acciones;
 
 import org.economix.vista.consola.Consola;
-import org.economix.vista.ventana.Ventana;
 
 public class seleccionEjecutable extends leerAcciones
 {
@@ -52,7 +51,7 @@ public class seleccionEjecutable extends leerAcciones
         }
         if(opcion==2)
         {
-            ejecutable = Ventana.getInstance();
+            ejecutable = null;
         }
         ejecutable.setFlag( true );
         ejecutable.run();

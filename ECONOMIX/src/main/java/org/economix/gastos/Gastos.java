@@ -4,48 +4,38 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.economix.model.Catalogo;
 import org.economix.usuario.Usuario;
-import org.economix.vista.acciones.Ejecutable;
-import org.hibernate.type.descriptor.jdbc.NumericJdbcType;
-import org.w3c.dom.Text;
 
-import java.awt.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Date;
 
-@Data //Creador de getters y setters
-@AllArgsConstructor //Constructor con todos los argumentos
-@NoArgsConstructor //Constructor vacío (default)
-@EqualsAndHashCode(callSuper = true)
-/*
-Sirven para comparar objetos de una clase de manera lógica
-y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
- */
-@ToString(callSuper = true) //Creador de ToString
-@Entity //Le dice a Hibernate que esto es una entidad
-@Table( name="TBL_GASTOS" ) // Le dice a Hibernate a qué tabla de la BD refiere
+@AttributeOverride(
+        name = "id",
+        column = @Column(name = "idGastos")
+)
+@Entity
+@Table(name = "tbl_gastos")                       // ← igual que en la BD
+@Data @NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true) @ToString(callSuper = true)
+public class Gastos extends Catalogo implements Serializable{
 
-public class Gastos extends Catalogo implements Serializable
-{
-    @Column(name = "artículoGasto", nullable = false )
-    private String gastos;
+    @Column(name = "artículoGasto", length = 100)      // ← default: nullable = true
+    private String articuloGasto;
 
-    @Column( name = "descriocionGastos", nullable = false)
-    private Text descripcionGastos;
+    @Lob
+    @Column(name = "descripciónGasto", columnDefinition = "TEXT")
+    private String descripcionGastos;
 
-    @Column( name = "montoGastos", nullable = false)
-    private NumericJdbcType montoGastos;
+    @Column(name = "montoGasto", precision = 10, scale = 2)
+    private BigDecimal montoGastos;
 
-    @Column( name = "fechaGastos", nullable = false)
+    @Column(name = "fechaGastos")
     private Date fechaGastos;
 
-    @Column( name = "periodoGastos", nullable = false )
+    @Column(name = "periodoGastos", length = 50)
     private String periodoGastos;
 
-    @ManyToOne
-    @JoinColumn( name = "TBL_USUARiO_idUsuario")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "idUsuario", nullable = true)
     private Usuario usuario;
-
-    public static Ejecutable getInstance() {
-        return null;
-    }
 }
