@@ -2,13 +2,14 @@ package org.economix.sql.hibernateimpl;
 
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
-import org.economix.usuario.Persona;
 import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.List;
-//DEJO ESTA CLASE COMO EJEMPLO PARA CREAR LAS DEMÁS
+
+
 public class UsuarioHiberImpl implements GenericSql<Usuario>, Ejecutable {
     private static UsuarioHiberImpl usuarioHiber ;
 
@@ -28,10 +29,10 @@ public class UsuarioHiberImpl implements GenericSql<Usuario>, Ejecutable {
         Session session = HibernateUtil.getSession();
         if (session == null) {
             System.out.println("ERROR DE CONEXION");
-            return null;
+            return new ArrayList<>();
         }
         List<Usuario> list = session
-                .createQuery("FROM USUARIO", Usuario.class)
+                .createQuery("FROM Usuario", Usuario.class)   // ← usa el nombre de la CLASE, no de la tabla
                 .getResultList();
         session.close();
         return list;
@@ -60,8 +61,19 @@ public class UsuarioHiberImpl implements GenericSql<Usuario>, Ejecutable {
     @Override
     public boolean delete(Usuario usuario) {
         Session session = HibernateUtil.getSession();
+        if (session == null) {
+            System.out.println("ERROR DE CONEXION");
+            return false;
+        }
+
         session.beginTransaction();
-        session.remove(usuario);
+        // ① Carga el managed entity dentro de la misma sesión
+        Usuario managed = session.get(Usuario.class, usuario.getId());
+        if (managed != null) {
+            session.remove(managed);
+        } else {
+            System.out.println("> El usuario ya no existe en BD");
+        }
         session.getTransaction().commit();
         session.close();
         return true;

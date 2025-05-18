@@ -7,22 +7,21 @@ import org.economix.vista.acciones.Ejecutable;
 
 import java.io.Serializable;
 
-@Data //Creador de getters y setters
-@AllArgsConstructor //Constructor con todos los argumentos
-@NoArgsConstructor //Constructor vacío (default)
-@EqualsAndHashCode(callSuper = true)
-/*
-Sirven para comparar objetos de una clase de manera lógica
-y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
- */
-@ToString(callSuper = true) //Creador de ToString
-@Entity //Le dice a Hibernate que esto es una entidad
-@Table( name="USUARIO" ) // Le dice a Hibernate a qué tabla de la BD refiere
-
+@AttributeOverride(
+        name = "id",
+        column = @Column(name = "idUsuario")
+)
+@Entity
+@Table(name = "tbl_usuario")                       // ← igual que en la BD
+@Data @NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true) @ToString(callSuper = true)
 public class Usuario extends Catalogo implements Serializable
 {
-    @Column(name = "USUARIO", nullable = false )
-    private String usuario;
+    @Column(name = "perfilUsuario", length = 100)
+    private String perfilUsuario;
+
+    @Column(name = "contraseñaUsuario", length = 100)
+    private String contraseñaUsuario;
 
     public static Ejecutable getInstance() {
         return null;

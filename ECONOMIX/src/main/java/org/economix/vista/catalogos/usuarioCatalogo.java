@@ -1,10 +1,13 @@
 package org.economix.vista.catalogos;
 
+
 import org.economix.sql.GenericSql;
 import org.economix.usuario.Usuario;
 import org.economix.util.readUtil;
 import org.economix.vista.acciones.gestorCatalogos;
 import org.economix.sql.hibernateimpl.UsuarioHiberImpl;
+
+
 
 public class usuarioCatalogo extends gestorCatalogos<Usuario> {
     private static usuarioCatalogo usuarioCatalogo;
@@ -28,19 +31,25 @@ public class usuarioCatalogo extends gestorCatalogos<Usuario> {
 
     @Override
     public boolean processNewT(Usuario usuario) {
-        System.out.print("> Teclee el nombre del gasto: ");
-        usuario.setUsuario(readUtil.read());
+        System.out.print("> Teclee su nombre de Perfil: ");
+        usuario.setPerfilUsuario(readUtil.read());
+
+        System.out.print("> Teclee su contraseña de Perfil: ");
+        usuario.setContraseñaUsuario(readUtil.read());
+
         usuarioHiber.save(usuario);
         return true;
     }
 
     @Override
     public boolean processEditT(Usuario usuario) {
-        System.out.print("> Ingrese el nuevo nombre del gasto: ");
-        usuario.setUsuario( readUtil.read() );
-        usuarioHiber.update(usuario);
+        System.out.print("> Teclee su nuevo nombre de Perfil: ");
+        usuario.setPerfilUsuario(readUtil.read());
+
+        System.out.print("> Teclee su nueva contraseña de Perfil: ");
+        usuario.setContraseñaUsuario(readUtil.read());
+
+        usuarioHiber.save(usuario);
         return true;
-
     }
-
 }
