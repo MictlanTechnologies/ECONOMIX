@@ -67,7 +67,7 @@ public class UsuarioHiberImpl implements GenericSql<Usuario>, Ejecutable {
         }
 
         session.beginTransaction();
-        // ① Carga el managed entity dentro de la misma sesión
+        // ① Carga el managed entity dentro de la misma sesiUón
         Usuario managed = session.get(Usuario.class, usuario.getId());
         if (managed != null) {
             session.remove(managed);

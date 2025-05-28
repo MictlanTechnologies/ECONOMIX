@@ -8,6 +8,8 @@ import org.economix.usuario.Usuario;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @AttributeOverride(
         name = "id",
@@ -17,7 +19,7 @@ import java.sql.Date;
 @Table(name = "tbl_gastos")                       // ← igual que en la BD
 @Data @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true) @ToString(callSuper = true)
-public class Gastos extends Catalogo implements Serializable{
+public class Gastos extends Catalogo implements Serializable {
 
     @Column(name = "artículoGasto", length = 100)      // ← default: nullable = true
     private String articuloGasto;
@@ -35,7 +37,9 @@ public class Gastos extends Catalogo implements Serializable{
     @Column(name = "periodoGastos", length = 50)
     private String periodoGastos;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "idUsuario", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idUsuario", nullable = false)
+    @ToString.Exclude            // 👈 evita que Lombok lo toque
+    @EqualsAndHashCode.Exclude   // opcional, por seguridad
     private Usuario usuario;
 }

@@ -3,10 +3,10 @@ package org.economix.sql.hibernateimpl;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.gastos.Gastos;
 import org.economix.sql.GenericSql;
+import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
@@ -25,18 +25,30 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
 
     @Override
     public List<Gastos> findAll() {           // ← cambia Entidad por el tipo correcto
-        Session session = HibernateUtil.getSession();
-        if (session == null) {
-            System.out.println("ERROR DE CONEXION");
-            return new ArrayList<>();
+        try (Session session = HibernateUtil.getSession()) {
+            return session
+                    .createQuery(
+                            "select g from Gastos g join fetch g.usuario",  // 👈
+                            Gastos.class)
+                    .getResultList();
         }
-        List<Gastos> list = session
-                .createQuery("FROM Gastos", Gastos.class)   // ← usa el nombre de la CLASE, no de la tabla
-                .getResultList();
-        session.close();
-        return list;
     }
 
+    public boolean save(Gastos gastos, Long idUsuario) {
+
+        try (Session session = HibernateUtil.getSession()) {
+            session.beginTransaction();
+            // 1) Traer o referenciar el usuario
+            Usuario usuario = session.getReference(Usuario.class, idUsuario);
+            //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
+            // 2) Vincular
+            gastos.setUsuario(usuario);
+            // 3) Persistir
+            session.persist(gastos);
+            session.getTransaction().commit();
+            return true;
+        }
+    }
 
     @Override
     public boolean save(Gastos gastos) {
