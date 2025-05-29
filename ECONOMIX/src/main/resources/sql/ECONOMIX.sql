@@ -170,15 +170,15 @@ CREATE INDEX `idUsuario` ON `economix`.`tbl_domicilio` (`idUsuario` ASC) VISIBLE
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `economix`.`tbl_nombreusuario`
+-- Table `economix`.`tbl_persona`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `economix`.`tbl_nombreusuario` (
-  `idNombre` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(50) NULL DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_persona` (
+  `idPersona` INT NOT NULL AUTO_INCREMENT,
+  `nombrePersona` VARCHAR(50) NULL DEFAULT NULL,
   `apellidoP` VARCHAR(50) NULL DEFAULT NULL,
   `apellidoM` VARCHAR(50) NULL DEFAULT NULL,
   `idUsuario` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`idNombre`),
+  PRIMARY KEY (`idPersona`),
   CONSTRAINT `tbl_nombreusuario_ibfk_1`
     FOREIGN KEY (`idUsuario`)
     REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
@@ -187,7 +187,7 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`tbl_nombreusuario` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idUsuario` ON `economix`.`tbl_persona` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 

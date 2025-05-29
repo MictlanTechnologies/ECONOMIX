@@ -30,6 +30,9 @@ public class Usuario extends Catalogo implements Serializable {
             cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude               // evita colección pesada
     private List<Gastos> gastos = new ArrayList<>();
+    private List<Persona> personas = new ArrayList<>();
+    private List<Domicilio> domicilios = new ArrayList<>();
+    private List<Contacto> contactos = new ArrayList<>();
     public static Ejecutable getInstance() {
         return null;
     }

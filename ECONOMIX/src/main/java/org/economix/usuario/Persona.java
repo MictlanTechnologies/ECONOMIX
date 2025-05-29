@@ -5,26 +5,40 @@ import lombok.*;
 import org.economix.model.Catalogo;
 import org.economix.vista.acciones.Ejecutable;
 
+
 import java.io.Serializable;
 
-@Data //Creador de getters y setters
-@AllArgsConstructor //Constructor con todos los argumentos
-@NoArgsConstructor //Constructor vacío (default)
-@EqualsAndHashCode(callSuper = true)
-/*
-Sirven para comparar objetos de una clase de manera lógica
-y para que funcionen bien en estructuras de datos como HashSet, HashMap, etc.
- */
-@ToString(callSuper = true) //Creador de ToString
-@Entity //Le dice a Hibernate que esto es una entidad
-@Table( name="nombrePersona" ) // Le dice a Hibernate a qué tabla de la BD refiere
 
-public class Persona extends Catalogo implements Serializable
-{
+@AttributeOverride(
+        name = "id",
+        column = @Column(name = "idPersona")
+)
+@Entity
+@Table(name = "tbl_persona")                       // ← igual que en la BD
+@Data @NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
+public class Persona extends Catalogo implements Serializable{
+
+    @ToString.Include(name = "idUsuario")        // ★
+    public Integer getIdUsuario() {
+        return usuario != null ? usuario.getId() : null;
+    }
+
+    @ToString.Include
     @Column(name = "nombrePersona", nullable = false )
     private String persona;
 
-    public static Ejecutable getInstance() {
-        return null;
-    }
+    @ToString.Include
+    @Column(name = "apellidoP", nullable = false )
+    private String apellidoP;
+
+    @ToString.Include
+    @Column(name = "apellidoM", nullable = false )
+    private String apellidoM;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idUsuario", nullable = false)
+    @ToString.Exclude
+    private Usuario usuario;
 }

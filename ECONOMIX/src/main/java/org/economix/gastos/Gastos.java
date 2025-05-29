@@ -8,6 +8,8 @@ import org.economix.usuario.Usuario;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @AttributeOverride(
         name = "id",
@@ -49,4 +51,9 @@ public class Gastos extends Catalogo implements Serializable{
     @JoinColumn(name = "idUsuario", nullable = false)
     @ToString.Exclude
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "gastos", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude               // evita colección pesada
+    private List<conceptoGastos> conceptoGastos = new ArrayList<>();
 }

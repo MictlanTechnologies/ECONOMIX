@@ -1,21 +1,23 @@
 package org.economix.sql.hibernateimpl;
 
+import org.economix.gastos.Gastos;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.usuario.Contacto;
+import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
 import java.util.List;
 
 public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
-    private static ContactoHiberImpl contactoHiber ;
+    private static ContactoHiberImpl contactoHiber;
 
     private ContactoHiberImpl() {
     }
 
     public static ContactoHiberImpl getInstance() {
-        if ( contactoHiber == null) {
+        if (contactoHiber == null) {
             contactoHiber = new ContactoHiberImpl();
         }
         return contactoHiber;
@@ -23,17 +25,30 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
 
 
     @Override
-    public List<Contacto> findAll() {
-        Session session = HibernateUtil.getSession();
-        if (session == null) {
-            System.out.println("ERROR DE CONEXION");
-            return null;
+    public List<Contacto> findAll() {           // ← cambia Entidad por el tipo correcto
+        try (Session session = HibernateUtil.getSession()) {
+            return session
+                    .createQuery(
+                            "select g from Contacto g join fetch g.usuario",  // 👈
+                            Contacto.class)
+                    .getResultList();
         }
-        List<Contacto> list = session
-                .createQuery("FROM CONTACTOS", Contacto.class)
-                .getResultList();
-        session.close();
-        return list;
+    }
+
+    public boolean save(Contacto contacto, Long idUsuario) {
+
+        try (Session session = HibernateUtil.getSession()) {
+            session.beginTransaction();
+            // 1) Traer o referenciar el usuario
+            Usuario usuario = session.getReference(Usuario.class, idUsuario);
+            //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
+            // 2) Vincular
+            contacto.setUsuario(usuario);
+            // 3) Persistir
+            session.persist(contacto);
+            session.getTransaction().commit();
+            return true;
+        }
     }
 
     @Override
@@ -59,12 +74,24 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
     @Override
     public boolean delete(Contacto contacto) {
         Session session = HibernateUtil.getSession();
+        if (session == null) {
+            System.out.println("ERROR DE CONEXION");
+            return false;
+        }
+
         session.beginTransaction();
-        session.remove(contacto);
+        // ① Carga el managed entity dentro de la misma sesión
+        Gastos managed = session.get(Gastos.class, contacto.getId());
+        if (managed != null) {
+            session.remove(managed);
+        } else {
+            System.out.println("> El contacto ya no existe en BD");
+        }
         session.getTransaction().commit();
         session.close();
         return true;
     }
+
 
     @Override
     public Contacto findById(Integer id) {

@@ -28,15 +28,15 @@ public class domicilioCatalogo extends gestorCatalogos<Domicilio> {
 
     @Override
     public boolean processNewT(Domicilio domicilio) {
-        System.out.print("> Teclee el nombre del gasto: ");
-        domicilio.setDomicilio(readUtil.read());
+        System.out.print("> Teclee el nombre del domicilio: ");
+        domicilio.set(readUtil.read());
         domicilioHiber.save(domicilio);
         return true;
     }
 
     @Override
     public boolean processEditT(Domicilio domicilio) {
-        System.out.print("> Ingrese el nuevo nombre del gasto: ");
+        System.out.print("> Ingrese el nuevo nombre del domicilio: ");
         domicilio.setDomicilio( readUtil.read() );
         domicilioHiber.update(domicilio);
         return true;

@@ -3,19 +3,20 @@ package org.economix.sql.hibernateimpl;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.usuario.Domicilio;
+import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
 import java.util.List;
 
 public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
-    private static DomicilioHiberImpl domicilioHiber ;
+    private static DomicilioHiberImpl domicilioHiber;
 
     private DomicilioHiberImpl() {
     }
 
     public static DomicilioHiberImpl getInstance() {
-        if ( domicilioHiber == null) {
+        if (domicilioHiber == null) {
             domicilioHiber = new DomicilioHiberImpl();
         }
         return domicilioHiber;
@@ -23,17 +24,30 @@ public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
 
 
     @Override
-    public List<Domicilio> findAll() {
-        Session session = HibernateUtil.getSession();
-        if (session == null) {
-            System.out.println("ERROR DE CONEXION");
-            return null;
+    public List<Domicilio> findAll() {           // ← cambia Entidad por el tipo correcto
+        try (Session session = HibernateUtil.getSession()) {
+            return session
+                    .createQuery(
+                            "select g from Domicilio g join fetch g.usuario",  // 👈
+                            Domicilio.class)
+                    .getResultList();
         }
-        List<Domicilio> list = session
-                .createQuery("FROM DOMICILIO", Domicilio.class)
-                .getResultList();
-        session.close();
-        return list;
+    }
+
+    public boolean save(Domicilio domicilio, Long idUsuario) {
+
+        try (Session session = HibernateUtil.getSession()) {
+            session.beginTransaction();
+            // 1) Traer o referenciar el usuario
+            Usuario usuario = session.getReference(Usuario.class, idUsuario);
+            //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
+            // 2) Vincular
+            domicilio.setUsuario(usuario);
+            // 3) Persistir
+            session.persist(domicilio);
+            session.getTransaction().commit();
+            return true;
+        }
     }
 
     @Override
@@ -59,12 +73,24 @@ public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
     @Override
     public boolean delete(Domicilio domicilio) {
         Session session = HibernateUtil.getSession();
+        if (session == null) {
+            System.out.println("ERROR DE CONEXION");
+            return false;
+        }
+
         session.beginTransaction();
-        session.remove(domicilio);
+        // ① Carga el managed entity dentro de la misma sesión
+        Domicilio managed = session.get(Domicilio.class, domicilio.getId());
+        if (managed != null) {
+            session.remove(managed);
+        } else {
+            System.out.println("> El domicilio ya no existe en BD");
+        }
         session.getTransaction().commit();
         session.close();
         return true;
     }
+
 
     @Override
     public Domicilio findById(Integer id) {
@@ -84,4 +110,3 @@ public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
 
     }
 }
-
