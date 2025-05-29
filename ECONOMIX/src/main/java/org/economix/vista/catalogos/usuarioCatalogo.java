@@ -49,7 +49,7 @@ public class usuarioCatalogo extends gestorCatalogos<Usuario> {
         System.out.print("> Teclee su nueva contraseña de Perfil: ");
         usuario.setContraseñaUsuario(readUtil.read());
 
-        usuarioHiber.save(usuario);
+        usuarioHiber.update(usuario);
         return true;
     }
 }

@@ -5,6 +5,7 @@ import org.economix.sql.GenericSql;
 import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +51,18 @@ public class UsuarioHiberImpl implements GenericSql<Usuario>, Ejecutable {
 
     @Override
     public boolean update(Usuario usuario) {
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
-        session.merge(usuario);
-        session.getTransaction().commit();
-        session.close();
-        return true;
+        Transaction tx = null;
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            tx = s.beginTransaction();
+            Usuario managed = (Usuario) s.merge(usuario);   // ← opcional, si la necesitas
+            // puedes usar 'managed' aquí dentro
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();  // revierte cambios
+            e.printStackTrace();            // o loguéalo con tu logger
+            return false;
+        }
     }
 
     @Override

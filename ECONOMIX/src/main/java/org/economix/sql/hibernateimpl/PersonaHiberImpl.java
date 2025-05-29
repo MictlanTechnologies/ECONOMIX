@@ -3,10 +3,14 @@ package org.economix.sql.hibernateimpl;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.usuario.Persona;
+import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class PersonaHiberImpl implements GenericSql<Persona>, Ejecutable {
     private static PersonaHiberImpl personaHiber ;
@@ -27,10 +31,10 @@ public class PersonaHiberImpl implements GenericSql<Persona>, Ejecutable {
         Session session = HibernateUtil.getSession();
         if (session == null) {
             System.out.println("ERROR DE CONEXION");
-            return null;
+            return new ArrayList<>();
         }
         List<Persona> list = session
-                .createQuery("FROM nombrePersona", Persona.class)
+                .createQuery("FROM Persona", Persona.class)   // ← usa el nombre de la CLASE, no de la tabla
                 .getResultList();
         session.close();
         return list;
@@ -48,19 +52,36 @@ public class PersonaHiberImpl implements GenericSql<Persona>, Ejecutable {
 
     @Override
     public boolean update(Persona persona) {
-        Session session = HibernateUtil.getSession();
-        session.beginTransaction();
-        session.merge(persona);
-        session.getTransaction().commit();
-        session.close();
-        return true;
+        Transaction tx = null;
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            tx = s.beginTransaction();
+            Persona managed = (Persona) s.merge(persona);   // ← opcional, si la necesitas
+            // puedes usar 'managed' aquí dentro
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();  // revierte cambios
+            e.printStackTrace();            // o loguéalo con tu logger
+            return false;
+        }
     }
 
     @Override
     public boolean delete(Persona persona) {
         Session session = HibernateUtil.getSession();
+        if (session == null) {
+            System.out.println("ERROR DE CONEXION");
+            return false;
+        }
+
         session.beginTransaction();
-        session.remove(persona);
+        // ① Carga el managed entity dentro de la misma sesiUón
+        Usuario managed = session.get(Usuario.class, persona.getId());
+        if (managed != null) {
+            session.remove(managed);
+        } else {
+            System.out.println("> La Persona ya no existe en BD");
+        }
         session.getTransaction().commit();
         session.close();
         return true;

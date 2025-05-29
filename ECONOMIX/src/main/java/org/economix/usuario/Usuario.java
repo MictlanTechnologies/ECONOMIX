@@ -17,16 +17,13 @@ import java.util.List;
 @Entity
 @Table(name = "tbl_usuario")                       // ← igual que en la BD
 @Data @NoArgsConstructor @AllArgsConstructor
-@ToString(onlyExplicitlyIncluded = true)
-public class Usuario extends Catalogo implements Serializable{
-
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)   // ← llamamos al super
+public class Usuario extends Catalogo implements Serializable {
 
     @ToString.Include
-    @Column(name = "perfilUsuario", length = 100)
     private String perfilUsuario;
 
     @ToString.Include
-    @Column(name = "contraseñaUsuario", length = 100)
     private String contraseñaUsuario;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY,
