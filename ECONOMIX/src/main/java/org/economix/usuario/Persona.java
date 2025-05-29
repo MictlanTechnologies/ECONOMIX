@@ -27,7 +27,7 @@ public class Persona extends Catalogo implements Serializable{
 
     @ToString.Include
     @Column(name = "nombrePersona", nullable = false )
-    private String persona;
+    private String nombreP;
 
     @ToString.Include
     @Column(name = "apellidoP", nullable = false )
