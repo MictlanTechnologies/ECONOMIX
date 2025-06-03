@@ -51,10 +51,10 @@ public class listaFunciones extends leerAcciones
         switch(opcion)
         {
             case 1:
-                ejecutable = ingresosCatalogo.getInstance();
+                ejecutable = listaIngresos.getInstance();
             break;
             case 2:
-                ejecutable = gastosCatalogo.getInstance();
+                ejecutable = listaGastos.getInstance();
                 break;
             case 3:
                 flag = false;
