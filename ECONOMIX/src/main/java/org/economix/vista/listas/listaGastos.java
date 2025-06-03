@@ -3,33 +3,33 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
+import org.economix.vista.catalogos.gastos.conceptoGastosCatalogo;
 import org.economix.vista.catalogos.gastos.gastosCatalogo;
-import org.economix.vista.catalogos.ingresos.ingresosCatalogo;
 
-public class listaFunciones extends leerAcciones
+public class listaGastos extends leerAcciones
 {
-    private static listaFunciones listaFunciones;
+    private static org.economix.vista.listas.listaGastos listaGastos;
 
-    private listaFunciones()
+    private listaGastos()
     {
     }
 
-    public static listaFunciones getInstance()
+    public static org.economix.vista.listas.listaGastos getInstance()
     {
-        if(listaFunciones ==null)
+        if(listaGastos ==null)
         {
-            listaFunciones = new listaFunciones();
+            listaGastos = new listaGastos();
         }
-        return listaFunciones;
+        return listaGastos;
     }
 
     @Override
     public void despliegaMenu()
     {
-        System.out.println("\n\t::: Catálogo de Funciones :::");
-        System.out.println( "1.- Ingresos");
-        System.out.println( "2.- Gastos");
-        System.out.println( "3.- Salir");
+        System.out.println("\n\t::: Catálogo de Usuario :::");
+        System.out.println( "1.- Gastos");
+        System.out.println( "2.- Conceptos Gastos");
+        System.out.println( "3.- Salir " );
         Menu.seleccionaOpcion();
     }
 
@@ -38,6 +38,7 @@ public class listaFunciones extends leerAcciones
     {
         return 1;
     }
+
     @Override
     public int valorMaxMenu()
     {
@@ -48,25 +49,27 @@ public class listaFunciones extends leerAcciones
     public void procesaOpcion()
     {
         Ejecutable ejecutable = null;
-        switch(opcion)
+        switch (opcion)
         {
             case 1:
-                ejecutable = ingresosCatalogo.getInstance();
-            break;
-            case 2:
                 ejecutable = gastosCatalogo.getInstance();
                 break;
+            case 2:
+                ejecutable = conceptoGastosCatalogo.getInstance();
+                break;
             case 3:
-                flag = false;
+                flag=false;
                 break;
             default:
                 Menu.opcionInvalida();
                 break;
         }
+
         if(ejecutable!=null)
         {
-            ejecutable.setFlag(true);
-            ejecutable.run();
+            ejecutable.setFlag( true );
+            ejecutable.run( );
         }
     }
 }
+
