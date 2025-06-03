@@ -1,12 +1,12 @@
-package org.economix.vista.catalogos;
+package org.economix.vista.catalogos.gastos;
 
 import org.economix.gastos.Gastos;
 import org.economix.gastos.conceptoGastos;
 import org.economix.sql.GenericSql;
-import org.economix.sql.hibernateimpl.GastosHiberImpl;
+import org.economix.sql.hibernateimpl.gastos.GastosHiberImpl;
 import org.economix.util.readUtil;
 import org.economix.vista.acciones.gestorCatalogos;
-import org.economix.sql.hibernateimpl.ConceptoGastosHiberImpl;
+import org.economix.sql.hibernateimpl.gastos.ConceptoGastosHiberImpl;
 
 public class conceptoGastosCatalogo extends gestorCatalogos<conceptoGastos> {
 

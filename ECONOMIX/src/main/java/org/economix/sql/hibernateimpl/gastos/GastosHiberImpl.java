@@ -1,78 +1,77 @@
-package org.economix.sql.hibernateimpl;
+package org.economix.sql.hibernateimpl.gastos;
 
-import org.economix.usuario.Usuario;
 import org.economix.hibernate.HibernateUtil;
+import org.economix.gastos.Gastos;
 import org.economix.sql.GenericSql;
-import org.economix.usuario.Persona;
+import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
 import java.util.List;
 
+public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
+    private static GastosHiberImpl gastosHiber;
 
-public class PersonaHiberImpl implements GenericSql<Persona>, Ejecutable {
-    private static PersonaHiberImpl personaHiber;
-
-    private PersonaHiberImpl() {
+    private GastosHiberImpl() {
     }
 
-    public static PersonaHiberImpl getInstance() {
-        if (personaHiber == null) {
-            personaHiber = new PersonaHiberImpl();
+    public static GastosHiberImpl getInstance() {
+        if (gastosHiber == null) {
+            gastosHiber = new GastosHiberImpl();
         }
-        return personaHiber;
+        return gastosHiber;
     }
 
 
     @Override
-    public List<Persona> findAll() {           // ← cambia Entidad por el tipo correcto
+    public List<Gastos> findAll() {           // ← cambia Entidad por el tipo correcto
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from Persona g join fetch g.usuario",  // 👈
-                            Persona.class)
+                            "select g from Gastos g join fetch g.usuario",  // 👈
+                            Gastos.class)
                     .getResultList();
         }
     }
 
-    public boolean save(Persona persona, Long idUsuario) {
+    public boolean save(Gastos gastos, Long idUsuario) {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             // 1) Traer o referenciar el usuario
-            Usuario usuario= session.getReference(Usuario.class, idUsuario);
+            Usuario usuario = session.getReference(Usuario.class, idUsuario);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular
-            persona.setUsuario(usuario);
+            gastos.setUsuario(usuario);
             // 3) Persistir
-            session.persist(persona);
+            session.persist(gastos);
             session.getTransaction().commit();
             return true;
         }
     }
 
     @Override
-    public boolean save(Persona persona) {
+    public boolean save(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction(); //Crea un conjunto de instrucciones
-        session.persist(persona);
+        session.persist(gastos);
         session.getTransaction().commit(); //Crea un commit de todo el conjunto de instrucciones
         session.close();
         return true;
     }
 
     @Override
-    public boolean update(Persona persona) {
+    public boolean update(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-        session.merge(persona);
+        session.merge(gastos);
         session.getTransaction().commit();
         session.close();
         return true;
     }
 
     @Override
-    public boolean delete(Persona persona) {
+    public boolean delete(Gastos gastos) {
         Session session = HibernateUtil.getSession();
         if (session == null) {
             System.out.println("ERROR DE CONEXION");
@@ -81,11 +80,11 @@ public class PersonaHiberImpl implements GenericSql<Persona>, Ejecutable {
 
         session.beginTransaction();
         // ① Carga el managed entity dentro de la misma sesión
-        Persona managed = session.get(Persona.class, persona.getId());
+        Gastos managed = session.get(Gastos.class, gastos.getId());
         if (managed != null) {
             session.remove(managed);
         } else {
-            System.out.println("> La persona ya no existe en BD");
+            System.out.println("> El gasto ya no existe en BD");
         }
         session.getTransaction().commit();
         session.close();
@@ -94,11 +93,11 @@ public class PersonaHiberImpl implements GenericSql<Persona>, Ejecutable {
 
 
     @Override
-    public Persona findById(Integer id) {
+    public Gastos findById(Integer id) {
         Session session = HibernateUtil.getSession();
-        Persona persona = session.get(Persona.class, id);
+        Gastos gastos = session.get(Gastos.class, id);
         session.close();
-        return persona;
+        return gastos;
     }
 
     @Override

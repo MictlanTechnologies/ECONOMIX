@@ -1,10 +1,10 @@
-package org.economix.vista.catalogos;
+package org.economix.vista.catalogos.gastos;
 
 import org.economix.gastos.Gastos;
 import org.economix.usuario.Usuario;                 // ← importa la entidad
 import org.economix.sql.GenericSql;
-import org.economix.sql.hibernateimpl.GastosHiberImpl;
-import org.economix.sql.hibernateimpl.UsuarioHiberImpl; // ← importa la impl
+import org.economix.sql.hibernateimpl.gastos.GastosHiberImpl;
+import org.economix.sql.hibernateimpl.usuario.UsuarioHiberImpl; // ← importa la impl
 import org.economix.util.readUtil;
 import org.economix.vista.acciones.gestorCatalogos;
 

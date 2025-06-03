@@ -1,8 +1,8 @@
-package org.economix.vista.catalogos;
+package org.economix.vista.catalogos.usuario;
 
 import org.economix.sql.GenericSql;
-import org.economix.sql.hibernateimpl.PersonaHiberImpl;
-import org.economix.sql.hibernateimpl.UsuarioHiberImpl;
+import org.economix.sql.hibernateimpl.usuario.PersonaHiberImpl;
+import org.economix.sql.hibernateimpl.usuario.UsuarioHiberImpl;
 import org.economix.usuario.Persona;
 import org.economix.usuario.Usuario;
 import org.economix.util.readUtil;

@@ -1,77 +1,77 @@
-package org.economix.sql.hibernateimpl;
+package org.economix.sql.hibernateimpl.ingresos;
 
+import org.economix.Ingresos.Ingresos;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
-import org.economix.usuario.Domicilio;
-import org.economix.usuario.Usuario;
+import org.economix.Ingresos.conceptoIngresos;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
 import java.util.List;
 
-public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
-    private static DomicilioHiberImpl domicilioHiber;
+public class ConceptoIngresosHiberImpl implements GenericSql<conceptoIngresos>, Ejecutable {
+    private static ConceptoIngresosHiberImpl conceptoIngresosHiber;
 
-    private DomicilioHiberImpl() {
+    private ConceptoIngresosHiberImpl() {
     }
 
-    public static DomicilioHiberImpl getInstance() {
-        if (domicilioHiber == null) {
-            domicilioHiber = new DomicilioHiberImpl();
+    public static ConceptoIngresosHiberImpl getInstance() {
+        if (conceptoIngresosHiber == null) {
+            conceptoIngresosHiber = new ConceptoIngresosHiberImpl();
         }
-        return domicilioHiber;
+        return conceptoIngresosHiber;
     }
 
 
     @Override
-    public List<Domicilio> findAll() {           // ← cambia Entidad por el tipo correcto
+    public List<conceptoIngresos> findAll() {           // ← cambia Entidad por el tipo correcto
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from Domicilio g join fetch g.usuario",  // 👈
-                            Domicilio.class)
+                            "select g from conceptoIngresos g join fetch g.ingresos",  // 👈
+                            conceptoIngresos.class)
                     .getResultList();
         }
     }
 
-    public boolean save(Domicilio domicilio, Long idUsuario) {
+    public boolean save(conceptoIngresos conceptoIngresos, Long idIngresos) {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             // 1) Traer o referenciar el usuario
-            Usuario usuario = session.getReference(Usuario.class, idUsuario);
+            Ingresos ingresos = session.getReference(Ingresos.class, idIngresos);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular
-            domicilio.setUsuario(usuario);
+            conceptoIngresos.setIngresos(ingresos);
             // 3) Persistir
-            session.persist(domicilio);
+            session.persist(conceptoIngresos);
             session.getTransaction().commit();
             return true;
         }
     }
 
     @Override
-    public boolean save(Domicilio domicilio) {
+    public boolean save(conceptoIngresos conceptoIngresos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction(); //Crea un conjunto de instrucciones
-        session.persist(domicilio);
+        session.persist(conceptoIngresos);
         session.getTransaction().commit(); //Crea un commit de todo el conjunto de instrucciones
         session.close();
         return true;
     }
 
     @Override
-    public boolean update(Domicilio domicilio) {
+    public boolean update(conceptoIngresos conceptoIngresos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-        session.merge(domicilio);
+        session.merge(conceptoIngresos);
         session.getTransaction().commit();
         session.close();
         return true;
     }
 
     @Override
-    public boolean delete(Domicilio domicilio) {
+    public boolean delete(conceptoIngresos conceptoIngresos) {
         Session session = HibernateUtil.getSession();
         if (session == null) {
             System.out.println("ERROR DE CONEXION");
@@ -80,11 +80,11 @@ public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
 
         session.beginTransaction();
         // ① Carga el managed entity dentro de la misma sesión
-        Domicilio managed = session.get(Domicilio.class, domicilio.getId());
+        conceptoIngresos managed = session.get(conceptoIngresos.class, conceptoIngresos.getId());
         if (managed != null) {
             session.remove(managed);
         } else {
-            System.out.println("> El domicilio ya no existe en BD");
+            System.out.println("> El concepto de ingreso ya no existe en BD");
         }
         session.getTransaction().commit();
         session.close();
@@ -93,11 +93,11 @@ public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
 
 
     @Override
-    public Domicilio findById(Integer id) {
+    public conceptoIngresos findById(Integer id) {
         Session session = HibernateUtil.getSession();
-        Domicilio domicilio = session.get(Domicilio.class, id);
+        conceptoIngresos conceptoIngresos = session.get(conceptoIngresos.class, id);
         session.close();
-        return domicilio;
+        return conceptoIngresos;
     }
 
     @Override

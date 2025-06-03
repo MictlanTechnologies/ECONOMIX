@@ -1,4 +1,4 @@
-package org.economix.sql.hibernateimpl;
+package org.economix.sql.hibernateimpl.usuario;
 
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;

@@ -1,7 +1,7 @@
-package org.economix.sql.hibernateimpl;
+package org.economix.sql.hibernateimpl.ingresos;
 
+import org.economix.Ingresos.Ingresos;
 import org.economix.hibernate.HibernateUtil;
-import org.economix.gastos.Gastos;
 import org.economix.sql.GenericSql;
 import org.economix.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
@@ -9,32 +9,32 @@ import org.hibernate.Session;
 
 import java.util.List;
 
-public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
-    private static GastosHiberImpl gastosHiber;
+public class IngresosHiberImpl implements GenericSql<Ingresos>, Ejecutable {
+    private static IngresosHiberImpl ingresosHiber;
 
-    private GastosHiberImpl() {
+    private IngresosHiberImpl() {
     }
 
-    public static GastosHiberImpl getInstance() {
-        if (gastosHiber == null) {
-            gastosHiber = new GastosHiberImpl();
+    public static IngresosHiberImpl getInstance() {
+        if (ingresosHiber == null) {
+            ingresosHiber = new IngresosHiberImpl();
         }
-        return gastosHiber;
+        return ingresosHiber;
     }
 
 
     @Override
-    public List<Gastos> findAll() {           // ← cambia Entidad por el tipo correcto
+    public List<Ingresos> findAll() {           // ← cambia Entidad por el tipo correcto
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from Gastos g join fetch g.usuario",  // 👈
-                            Gastos.class)
+                            "select g from Ingresos g join fetch g.usuario",  // 👈
+                            Ingresos.class)
                     .getResultList();
         }
     }
 
-    public boolean save(Gastos gastos, Long idUsuario) {
+    public boolean save(Ingresos ingresos, Long idUsuario) {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
@@ -42,36 +42,36 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
             Usuario usuario = session.getReference(Usuario.class, idUsuario);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular
-            gastos.setUsuario(usuario);
+            ingresos.setUsuario(usuario);
             // 3) Persistir
-            session.persist(gastos);
+            session.persist(ingresos);
             session.getTransaction().commit();
             return true;
         }
     }
 
     @Override
-    public boolean save(Gastos gastos) {
+    public boolean save(Ingresos ingresos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction(); //Crea un conjunto de instrucciones
-        session.persist(gastos);
+        session.persist(ingresos);
         session.getTransaction().commit(); //Crea un commit de todo el conjunto de instrucciones
         session.close();
         return true;
     }
 
     @Override
-    public boolean update(Gastos gastos) {
+    public boolean update(Ingresos ingresos) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-        session.merge(gastos);
+        session.merge(ingresos);
         session.getTransaction().commit();
         session.close();
         return true;
     }
 
     @Override
-    public boolean delete(Gastos gastos) {
+    public boolean delete(Ingresos ingresos) {
         Session session = HibernateUtil.getSession();
         if (session == null) {
             System.out.println("ERROR DE CONEXION");
@@ -80,11 +80,11 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
 
         session.beginTransaction();
         // ① Carga el managed entity dentro de la misma sesión
-        Gastos managed = session.get(Gastos.class, gastos.getId());
+        Ingresos managed = session.get(Ingresos.class, ingresos.getId());
         if (managed != null) {
             session.remove(managed);
         } else {
-            System.out.println("> El gasto ya no existe en BD");
+            System.out.println("> El ingreso ya no existe en BD");
         }
         session.getTransaction().commit();
         session.close();
@@ -93,11 +93,11 @@ public class GastosHiberImpl implements GenericSql<Gastos>, Ejecutable {
 
 
     @Override
-    public Gastos findById(Integer id) {
+    public Ingresos findById(Integer id) {
         Session session = HibernateUtil.getSession();
-        Gastos gastos = session.get(Gastos.class, id);
+        Ingresos ingresos = session.get(Ingresos.class, id);
         session.close();
-        return gastos;
+        return ingresos;
     }
 
     @Override

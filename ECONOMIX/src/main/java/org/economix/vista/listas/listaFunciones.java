@@ -3,7 +3,7 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
-import org.economix.vista.catalogos.gastosCatalogo;
+import org.economix.vista.catalogos.gastos.gastosCatalogo;
 
 public class listaFunciones extends leerAcciones
 {

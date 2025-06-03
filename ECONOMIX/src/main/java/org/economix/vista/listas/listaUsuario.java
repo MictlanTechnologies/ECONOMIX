@@ -3,10 +3,10 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
-import org.economix.vista.catalogos.domicilioCatalogo;
-import org.economix.vista.catalogos.personaCatalogo;
-import org.economix.vista.catalogos.usuarioCatalogo;
-import org.economix.vista.catalogos.contactoCatalogo;
+import org.economix.vista.catalogos.usuario.domicilioCatalogo;
+import org.economix.vista.catalogos.usuario.personaCatalogo;
+import org.economix.vista.catalogos.usuario.usuarioCatalogo;
+import org.economix.vista.catalogos.usuario.contactoCatalogo;
 
 public class listaUsuario extends leerAcciones
 {
