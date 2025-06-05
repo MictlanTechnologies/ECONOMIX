@@ -1,4 +1,4 @@
-package org.economix.Ingresos;
+package org.economix.ingresos;
 
 import org.economix.model.Catalogo;
 
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
         column = @Column(name = "idConcepto")
 )
 @Entity
-@Table(name = "tbl_conceptoIngresos")                       // ← igual que en la BD
+@Table(name = "tbl_conceptoingresos")                       // ← igual que en la BD
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +30,7 @@ public class conceptoIngresos extends Catalogo implements Serializable {
     private String nombreConcepto;
 
     @ToString.Include
-    @Column(name = "descripciónConcepto", columnDefinition = "TEXT")
+    @Column(name = "descripcionConcepto", columnDefinition = "TEXT")
     private String descripcionConcepto;
 
     @ToString.Include

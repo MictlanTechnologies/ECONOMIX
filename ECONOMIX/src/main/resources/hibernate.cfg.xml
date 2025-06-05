@@ -26,5 +26,8 @@
 		<mapping class="org.economix.usuario.Domicilio"/>
 		<mapping class="org.economix.usuario.Persona"/>
 		<mapping class="org.economix.usuario.Usuario"/>
+		<mapping class="org.economix.ingresos.Ingresos"/>
+		<mapping class="org.economix.ingresos.conceptoIngresos"/>
+		<mapping class="org.economix.ingresos.Presupuesto"/>
 	</session-factory>
 </hibernate-configuration>

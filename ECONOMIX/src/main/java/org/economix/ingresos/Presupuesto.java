@@ -1,4 +1,4 @@
-package org.economix.Ingresos;
+package org.economix.ingresos;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,7 +29,7 @@ public class Presupuesto extends Catalogo implements Serializable {
     private Date fechaPresupuesto;
 
     @ToString.Include
-    @Column(name = "fechaActualizacionP")
+    @Column(name = "fechaActualizaciónP")
     private Date fechaActualizacionP;
 
     @ToString.Include

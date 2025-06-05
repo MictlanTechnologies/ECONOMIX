@@ -1,6 +1,6 @@
 package org.economix.vista.catalogos.ingresos;
 
-import org.economix.Ingresos.Ingresos;
+import org.economix.ingresos.Ingresos;
 import org.economix.sql.hibernateimpl.ingresos.IngresosHiberImpl;
 import org.economix.usuario.Usuario;                 // ← importa la entidad
 import org.economix.sql.GenericSql;
@@ -37,17 +37,17 @@ public class ingresosCatalogo extends gestorCatalogos<Ingresos> {
 
     @Override
     public boolean processNewT(Ingresos ingresos) {
-        System.out.print("> Teclee el nombre del artículo: ");
+        System.out.print("> Teclee el monto del ingreso: ");
         ingresos.setMontoIngreso(readUtil.readBigDecimal());
 
-        System.out.print("> Descripción: ");
-        ingresos.setPreriodicidadIngresos(readUtil.read());
-
-        System.out.print("> Monto: ");
-        ingresos.setFechaIngresos(Date.valueOf(readUtil.read()));
+        System.out.print("> Periodicidad: ");
+        ingresos.setPeriodicidadIngreso(readUtil.read());
 
         System.out.print("> Fecha (yyyy-MM-dd): ");
-        ingresos.setDescripcionIngreso(readUtil.read()  );
+        ingresos.setFechaIngresos(Date.valueOf(readUtil.read()));
+
+        System.out.print("> Descripción: ");
+        ingresos.setDescripcionIngreso(readUtil.read());
 
         /* ==== VINCULACIÓN AL USUARIO ==== */
         System.out.print("> ID del usuario que registra el gasto: ");
@@ -67,21 +67,17 @@ public class ingresosCatalogo extends gestorCatalogos<Ingresos> {
 
     @Override
     public boolean processEditT(Ingresos ingresos) {
-        System.out.print("> Teclee el nuevo nombre del artículo: ");
+        System.out.print("> Teclee el nuevo monto del ingreso: ");
         ingresos.setMontoIngreso(readUtil.readBigDecimal());
 
-        System.out.print("> Descripción : ");
-        ingresos.setPreriodicidadIngresos(readUtil.read());
+        System.out.print("> Periodicidad Nueva: ");
+        ingresos.setPeriodicidadIngreso(readUtil.read());
 
-        System.out.print("> Monto: ");
+        System.out.print("> Fecha Nueva (yyyy-MM-dd): ");
         ingresos.setFechaIngresos(Date.valueOf(readUtil.read()));
 
-        System.out.print("> Fecha (yyyy-MM-dd): ");
-        ingresos.setDescripcionIngreso(readUtil.read()  );
-
-        /* ==== VINCULACIÓN AL USUARIO ==== */
-        System.out.print("> ID del usuario que registra el ingreso: ");
-        Integer idUsuario = readUtil.readInt();
+        System.out.print("> Descripción Nueva: ");
+        ingresos.setDescripcionIngreso(readUtil.read());
 
         System.out.print("> ID de usuario (ENTER para dejar igual): ");
         String inp = readUtil.read();

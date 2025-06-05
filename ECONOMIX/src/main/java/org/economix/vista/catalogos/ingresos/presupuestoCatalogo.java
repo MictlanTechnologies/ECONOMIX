@@ -1,7 +1,7 @@
 package org.economix.vista.catalogos.ingresos;
 
-import org.economix.Ingresos.Ingresos;
-import org.economix.Ingresos.Presupuesto;
+import org.economix.ingresos.Ingresos;
+import org.economix.ingresos.Presupuesto;
 import org.economix.sql.hibernateimpl.ingresos.IngresosHiberImpl;
 import org.economix.sql.hibernateimpl.ingresos.PresupuestoHiberImpl;
 import org.economix.sql.GenericSql;

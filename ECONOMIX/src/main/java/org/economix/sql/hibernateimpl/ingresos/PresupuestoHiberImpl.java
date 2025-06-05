@@ -1,11 +1,11 @@
 package org.economix.sql.hibernateimpl.ingresos;
 
-import org.economix.Ingresos.Ingresos;
+import org.economix.ingresos.Ingresos;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
-import org.economix.Ingresos.Presupuesto;
+import org.economix.ingresos.Presupuesto;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class PresupuestoHiberImpl implements GenericSql<Presupuesto>, Ejecutable
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from presupuesto g join fetch g.ingresos",  // 👈
+                            "select p from Presupuesto p join fetch p.ingresos",  // 👈
                             Presupuesto.class)
                     .getResultList();
         }

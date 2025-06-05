@@ -1,9 +1,9 @@
 package org.economix.sql.hibernateimpl.ingresos;
 
-import org.economix.Ingresos.Ingresos;
+import org.economix.ingresos.Ingresos;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
-import org.economix.Ingresos.conceptoIngresos;
+import org.economix.ingresos.conceptoIngresos;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
@@ -28,7 +28,7 @@ public class ConceptoIngresosHiberImpl implements GenericSql<conceptoIngresos>, 
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from conceptoIngresos g join fetch g.ingresos",  // 👈
+                            "select c from ConceptoIngresos c join fetch c.ingresos",  // 👈
                             conceptoIngresos.class)
                     .getResultList();
         }

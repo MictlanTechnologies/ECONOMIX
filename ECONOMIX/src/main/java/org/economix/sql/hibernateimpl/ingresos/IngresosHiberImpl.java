@@ -1,6 +1,6 @@
 package org.economix.sql.hibernateimpl.ingresos;
 
-import org.economix.Ingresos.Ingresos;
+import org.economix.ingresos.Ingresos;
 import org.economix.hibernate.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.usuario.Usuario;

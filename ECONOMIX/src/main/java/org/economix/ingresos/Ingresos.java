@@ -1,8 +1,7 @@
-package org.economix.Ingresos;
+package org.economix.ingresos;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.economix.gastos.conceptoGastos;
 import org.economix.model.Catalogo;
 import org.economix.usuario.Usuario;
 
@@ -33,8 +32,8 @@ public class Ingresos extends Catalogo implements Serializable {
     private BigDecimal montoIngreso;
 
     @ToString.Include
-    @Column(name = "preriodicidadIngresos", length = 50)
-    private String preriodicidadIngresos;
+    @Column(name = "periodicidadIngreso ", length = 50)
+    private String periodicidadIngreso;
 
     @ToString.Include
     @Column(name = "fechaIngresos")
