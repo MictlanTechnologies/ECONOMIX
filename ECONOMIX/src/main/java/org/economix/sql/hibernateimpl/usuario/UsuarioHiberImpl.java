@@ -1,8 +1,8 @@
 package org.economix.sql.hibernateimpl.usuario;
 
-import org.economix.hibernate.HibernateUtil;
+import org.economix.util.HibernateUtil;
 import org.economix.sql.GenericSql;
-import org.economix.usuario.Usuario;
+import org.economix.model.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

@@ -1,11 +1,11 @@
 package org.economix.sql.hibernateimpl.ingresos;
 
-import org.economix.ingresos.Ingresos;
-import org.economix.hibernate.HibernateUtil;
+import org.economix.model.ingresos.Ingresos;
+import org.economix.util.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
-import org.economix.ingresos.Presupuesto;
+import org.economix.model.ingresos.Presupuesto;
 
 import java.util.List;
 

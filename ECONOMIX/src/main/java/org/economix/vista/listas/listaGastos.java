@@ -3,8 +3,8 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
-import org.economix.vista.catalogos.gastos.conceptoGastosCatalogo;
-import org.economix.vista.catalogos.gastos.gastosCatalogo;
+import org.economix.model.catalogos.gastos.conceptoGastosCatalogo;
+import org.economix.model.catalogos.gastos.gastosCatalogo;
 
 public class listaGastos extends leerAcciones
 {

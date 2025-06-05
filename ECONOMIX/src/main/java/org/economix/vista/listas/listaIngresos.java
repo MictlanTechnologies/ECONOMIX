@@ -3,9 +3,9 @@ package org.economix.vista.listas;
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
-import org.economix.vista.catalogos.ingresos.ingresosCatalogo;
-import org.economix.vista.catalogos.ingresos.conceptoIngresosCatalogo;
-import org.economix.vista.catalogos.ingresos.presupuestoCatalogo;
+import org.economix.model.catalogos.ingresos.ingresosCatalogo;
+import org.economix.model.catalogos.ingresos.conceptoIngresosCatalogo;
+import org.economix.model.catalogos.ingresos.presupuestoCatalogo;
 
 public class listaIngresos extends leerAcciones
 {

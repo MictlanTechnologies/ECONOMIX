@@ -20,14 +20,14 @@
 		<!-- Drop and re-create the database schema on startup -->
 		<property name="hbm2ddl.auto">none</property>
 		<property name="hibernate.transform_hbm_xml.enabled">true</property>
-		<mapping class="org.economix.gastos.Gastos"/>
-		<mapping class="org.economix.gastos.conceptoGastos"/>
-		<mapping class="org.economix.usuario.Contacto"/>
-		<mapping class="org.economix.usuario.Domicilio"/>
-		<mapping class="org.economix.usuario.Persona"/>
-		<mapping class="org.economix.usuario.Usuario"/>
-		<mapping class="org.economix.ingresos.Ingresos"/>
-		<mapping class="org.economix.ingresos.conceptoIngresos"/>
-		<mapping class="org.economix.ingresos.Presupuesto"/>
+		<mapping class="org.economix.model.gastos.Gastos"/>
+		<mapping class="org.economix.model.gastos.conceptoGastos"/>
+		<mapping class="org.economix.model.usuario.Contacto"/>
+		<mapping class="org.economix.model.usuario.Domicilio"/>
+		<mapping class="org.economix.model.usuario.Persona"/>
+		<mapping class="org.economix.model.usuario.Usuario"/>
+		<mapping class="org.economix.model.ingresos.Ingresos"/>
+		<mapping class="org.economix.model.ingresos.conceptoIngresos"/>
+		<mapping class="org.economix.model.ingresos.Presupuesto"/>
 	</session-factory>
 </hibernate-configuration>

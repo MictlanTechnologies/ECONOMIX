@@ -1,9 +1,9 @@
 package org.economix.sql.hibernateimpl.ingresos;
 
-import org.economix.ingresos.Ingresos;
-import org.economix.hibernate.HibernateUtil;
+import org.economix.model.ingresos.Ingresos;
+import org.economix.util.HibernateUtil;
 import org.economix.sql.GenericSql;
-import org.economix.usuario.Usuario;
+import org.economix.model.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
