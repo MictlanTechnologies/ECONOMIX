@@ -16,10 +16,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Panel CRUD de Gastos filtrado por el usuario autenticado.
- */
-class GastosPanel extends JPanel {
+
+public class GastosPanel extends JPanel {
 
     /* ----------  Atributos ---------- */
     private final SessionFactory sf;

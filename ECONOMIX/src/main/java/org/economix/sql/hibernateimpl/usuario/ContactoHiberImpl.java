@@ -1,5 +1,6 @@
 package org.economix.sql.hibernateimpl.usuario;
 
+import org.economix.model.usuario.Persona;
 import org.economix.util.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.model.usuario.Contacto;
@@ -34,15 +35,15 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         }
     }
 
-    public boolean save(Contacto contacto, Long idUsuario) {
+    public boolean save(Contacto contacto, Long idPersona) {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             // 1) Traer o referenciar el usuario
-            Usuario usuario = session.getReference(Usuario.class, idUsuario);
+            Persona persona = session.getReference(Persona.class, idPersona);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular
-            contacto.setUsuario(usuario);
+            contacto.setPersona(persona);
             // 3) Persistir
             session.persist(contacto);
             session.getTransaction().commit();

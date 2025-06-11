@@ -17,9 +17,9 @@ import java.io.Serializable;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class Domicilio extends Catalogo implements Serializable{
 
-    @ToString.Include(name = "idUsuario")        // ★
-    public Integer getIdUsuario() {
-        return usuario != null ? usuario.getId() : null;
+    @ToString.Include(name = "idPersona")        // ★
+    public Integer getIdPersona() {
+        return persona != null ? persona.getId() : null;
     }
 
     @ToString.Include
@@ -39,7 +39,7 @@ public class Domicilio extends Catalogo implements Serializable{
     private String numero;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "idPersona", nullable = false)
     @ToString.Exclude
-    private Usuario usuario;
+    private Persona persona;
 }

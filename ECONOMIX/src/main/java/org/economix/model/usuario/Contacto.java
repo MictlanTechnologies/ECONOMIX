@@ -17,9 +17,9 @@ import java.io.Serializable;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class Contacto extends Catalogo implements Serializable
 {
-    @ToString.Include(name = "idUsuario")        // ★
+    @ToString.Include(name = "idPersona")        // ★
     public Integer getIdUsuario() {
-        return usuario != null ? usuario.getId() : null;
+        return persona != null ? persona.getId() : null;
     }
 
     @ToString.Include
@@ -31,6 +31,6 @@ public class Contacto extends Catalogo implements Serializable
     private String correo;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "idPersona", nullable = false)
+    private Persona persona;
 }

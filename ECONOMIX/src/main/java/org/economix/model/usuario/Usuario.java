@@ -37,18 +37,6 @@ public class Usuario extends Catalogo implements Serializable {
             fetch = FetchType.LAZY)
     private List<Persona> personas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    private List<Domicilio> domicilios = new ArrayList<>();
-
-    @OneToMany(mappedBy = "usuario",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    private List<Contacto> contactos = new ArrayList<>();
-
     public static Ejecutable getInstance() {
         return null;
     }

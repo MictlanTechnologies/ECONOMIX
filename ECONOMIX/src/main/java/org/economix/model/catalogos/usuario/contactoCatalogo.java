@@ -1,8 +1,9 @@
 package org.economix.model.catalogos.usuario;
 
+import org.economix.model.usuario.Persona;
 import org.economix.sql.GenericSql;
 import org.economix.sql.hibernateimpl.usuario.ContactoHiberImpl;
-import org.economix.sql.hibernateimpl.usuario.UsuarioHiberImpl;
+import org.economix.sql.hibernateimpl.usuario.PersonaHiberImpl;
 import org.economix.model.usuario.Contacto;
 import org.economix.model.usuario.Usuario;
 import org.economix.util.readUtil;
@@ -13,7 +14,7 @@ public class contactoCatalogo extends gestorCatalogos<Contacto> {
     private static contactoCatalogo contactoCatalogo;
 
     private static final GenericSql<Contacto> contactoHiber = ContactoHiberImpl.getInstance();
-    private static final GenericSql<Usuario>  usuarioHiber  = UsuarioHiberImpl.getInstance();
+    private static final GenericSql<Persona> personaHiber = PersonaHiberImpl.getInstance();
 
     public static contactoCatalogo getInstance() {
         if (contactoCatalogo == null) {
@@ -39,16 +40,16 @@ public class contactoCatalogo extends gestorCatalogos<Contacto> {
         System.out.print("> Teclee su correo electrónico: ");
         contacto.setCorreo(readUtil.read());
 
-        /* ==== VINCULACIÓN AL USUARIO ==== */
-        System.out.print("> ID del usuario que registra el gasto: ");
-        Integer idUsuario = readUtil.readInt();
+        /* ==== VINCULACIÓN A LA PERSONA ==== */
+        System.out.print("> ID de la persona que registra el contacto: ");
+        Integer idPersona = readUtil.readInt();
 
-        Usuario usuario = usuarioHiber.findById(idUsuario);
-        if (usuario == null) {
-            System.out.println("> ✖ No existe ese usuario. No se guardó el gasto.");
+        Persona persona = personaHiber.findById(idPersona);
+        if (persona == null) {
+            System.out.println("> ✖ No existe esa persona. No se guardó el contacto.");
             return false;
         }
-        contacto.setUsuario(usuario);        // ★ clave
+        contacto.setPersona(persona);        // ★ clave
 
         /* === guarda === */
         contactoHiber.save(contacto);
@@ -63,14 +64,14 @@ public class contactoCatalogo extends gestorCatalogos<Contacto> {
         System.out.print("> Teclee su nuevo correo electrónico: ");
         contacto.setCorreo(readUtil.read());
 
-        System.out.print("> ID de usuario (ENTER para dejar igual): ");
+        System.out.print("> ID de la persona (ENTER para dejar igual): ");
         String inp = readUtil.read();
         if (!inp.isBlank()) {
-            Usuario u = usuarioHiber.findById(Integer.parseInt(inp));
+            Persona u = personaHiber.findById(Integer.parseInt(inp));
             if (u == null) {
-                System.out.println("> Usuario no existe; se mantiene el actual.");
+                System.out.println("> Persona no existe; se mantiene el actual.");
             } else {
-                contacto.setUsuario(u);
+                contacto.setPersona(u);
             }
         }
         contactoHiber.update(contacto);

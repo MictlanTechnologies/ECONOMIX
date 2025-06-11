@@ -6,6 +6,8 @@ import org.economix.model.Catalogo;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @AttributeOverride(
@@ -35,6 +37,18 @@ public class Persona extends Catalogo implements Serializable{
     @ToString.Include
     @Column(name = "apellidoM", nullable = false )
     private String apellidoM;
+
+    @OneToMany(mappedBy = "persona",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Domicilio> domicilios = new ArrayList<>();
+
+    @OneToMany(mappedBy = "persona",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Contacto> contactos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idUsuario", nullable = false)

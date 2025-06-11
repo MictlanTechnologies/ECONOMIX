@@ -132,17 +132,17 @@ CREATE TABLE IF NOT EXISTS `economix`.`tbl_contactos` (
   `idContactos` INT NOT NULL AUTO_INCREMENT,
   `numCelular` VARCHAR(20) NULL DEFAULT NULL,
   `Correo` VARCHAR(100) NULL DEFAULT NULL,
-  `idUsuario` INT NULL DEFAULT NULL,
+  `idPersona` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idContactos`),
   CONSTRAINT `tbl_contactos_ibfk_1`
-    FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
+    FOREIGN KEY (`idPersona`)
+    REFERENCES `economix`.`tbl_persona` (`idPersona`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`tbl_contactos` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idPersona` ON `economix`.`tbl_contactos` (`idPersona` ASC) VISIBLE;
 
 SHOW WARNINGS;
 
@@ -155,17 +155,17 @@ CREATE TABLE IF NOT EXISTS `economix`.`tbl_domicilio` (
   `calle` VARCHAR(100) NULL DEFAULT NULL,
   `colonia` VARCHAR(100) NULL DEFAULT NULL,
   `número` VARCHAR(10) NULL DEFAULT NULL,
-  `idUsuario` INT NULL DEFAULT NULL,
+  `idPersona` INT NULL DEFAULT NULL,
   PRIMARY KEY (`idDomicilio`),
   CONSTRAINT `tbl_domicilio_ibfk_1`
-    FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
+    FOREIGN KEY (`idPersona`)
+    REFERENCES `economix`.`tbl_persona` (`idPersona`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idUsuario` ON `economix`.`tbl_domicilio` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idPersona` ON `economix`.`tbl_domicilio` (`idPersona` ASC) VISIBLE;
 
 SHOW WARNINGS;
 

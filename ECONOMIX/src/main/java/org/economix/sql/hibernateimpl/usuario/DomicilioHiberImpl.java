@@ -1,5 +1,6 @@
 package org.economix.sql.hibernateimpl.usuario;
 
+import org.economix.model.usuario.Persona;
 import org.economix.util.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.model.usuario.Domicilio;
@@ -28,21 +29,21 @@ public class DomicilioHiberImpl implements GenericSql<Domicilio>, Ejecutable {
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from Domicilio g join fetch g.usuario",  // 👈
+                            "select g from Domicilio g join fetch g.persona",  // 👈
                             Domicilio.class)
                     .getResultList();
         }
     }
 
-    public boolean save(Domicilio domicilio, Long idUsuario) {
+    public boolean save(Domicilio domicilio, Long idPersona) {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             // 1) Traer o referenciar el usuario
-            Usuario usuario = session.getReference(Usuario.class, idUsuario);
+            Persona persona = session.getReference(Persona.class, idPersona);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular
-            domicilio.setUsuario(usuario);
+            domicilio.setPersona(persona);
             // 3) Persistir
             session.persist(domicilio);
             session.getTransaction().commit();
