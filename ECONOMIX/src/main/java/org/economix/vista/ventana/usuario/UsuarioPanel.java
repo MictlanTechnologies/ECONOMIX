@@ -1,4 +1,4 @@
-package org.economix.vista.ventana;
+package org.economix.vista.ventana.usuario;
 
 /* --------------------------------------------------
  *  PANELES PLACEHOLDER PARA COMPLETAR

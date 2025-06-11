@@ -1,6 +1,7 @@
 package org.economix.vista.ventana;
 
 import org.economix.model.usuario.Usuario;
+import org.economix.vista.ventana.gastos.GastosPanel;
 import org.hibernate.SessionFactory;
 import java.awt.*;
 import javax.swing.*;

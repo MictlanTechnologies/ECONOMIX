@@ -34,12 +34,12 @@ public class ConceptoGastosHiberImpl implements GenericSql<conceptoGastos>, Ejec
         }
     }
 
-    public boolean save(conceptoGastos conceptoGastos, Long idUsuario) {
+    public boolean save(conceptoGastos conceptoGastos, Long idGastos) {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
             // 1) Traer o referenciar el usuario
-            Gastos gastos = session.getReference(Gastos.class, idUsuario);
+            Gastos gastos = session.getReference(Gastos.class, idGastos);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular
             conceptoGastos.setGastos(gastos);

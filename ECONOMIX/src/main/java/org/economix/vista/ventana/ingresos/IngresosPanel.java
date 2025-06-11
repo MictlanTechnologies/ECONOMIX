@@ -1,4 +1,4 @@
-package org.economix.vista.ventana;
+package org.economix.vista.ventana.ingresos;
 
 import org.economix.model.usuario.Usuario;
 import org.hibernate.SessionFactory;
