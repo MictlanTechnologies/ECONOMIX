@@ -1,12 +1,13 @@
-package org.economix.vista.ventana;
+package org.economix.ventana.inicio;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import org.economix.util.HibernateUtil;
+import org.economix.ventana.vista.LoginDialog;
+import org.economix.ventana.vista.RegistroDialog;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import javax.swing.*;
-
 
 /**
  * Lanzador de la aplicación.

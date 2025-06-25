@@ -1,7 +1,9 @@
-package org.economix.vista.ventana;
+package org.economix.ventana.vista;
 
 import org.economix.model.usuario.Usuario;
-import org.economix.vista.ventana.gastos.GastosPanel;
+import org.economix.ventana.model.gastos.GastosPanel;
+import org.economix.ventana.model.ingresos.IngresosPanel;
+import org.economix.ventana.model.usuario.UsuarioPanel;
 import org.hibernate.SessionFactory;
 import java.awt.*;
 import javax.swing.*;
@@ -39,8 +41,8 @@ public class PrincipalVentana extends JFrame {
 
         /* ---------- Tarjetas ---------- */
         cardPanel.add(new GastosPanel(sf, usuarioActual), "Gastos");
-        cardPanel.add(new JPanel() {{ add(new JLabel("Ingresos en construcción")); }}, "Ingresos");
-        cardPanel.add(new JPanel() {{ add(new JLabel("Usuario en construcción")); }}, "Usuario");
+        cardPanel.add(new IngresosPanel(sf,usuarioActual), "Ingresos");
+        cardPanel.add(new UsuarioPanel(sf,usuarioActual), "Usuario");
         add(cardPanel, BorderLayout.CENTER);
 
         /* ---------- Eventos ---------- */

@@ -1,8 +1,8 @@
-package org.economix.vista.ventana.gastos;
+package org.economix.ventana.model.gastos;
 
 import org.economix.model.gastos.Gastos;
 import org.economix.model.usuario.Usuario;
-import org.economix.vista.ventana.GestorCatalogosSwing;
+import org.economix.ventana.model.GestorCatalogosSwing;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
