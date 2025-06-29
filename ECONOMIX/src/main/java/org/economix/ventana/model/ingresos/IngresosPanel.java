@@ -8,12 +8,13 @@ import org.hibernate.Session;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.swing.*;
 
 public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
@@ -24,12 +25,35 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
     private final JTextField fechaTxt       = new JTextField(10); // yyyy-MM-dd
     private final JTextField periodoTxt     = new JTextField(12);
 
+    private final JCheckBox recurrenteChk = new JCheckBox("Ingreso recurrente");
+    private final DefaultListModel<IngRec> recurrentesModelo = new DefaultListModel<>();
+    private final JList<IngRec> recurrentesLista = new JList<>(recurrentesModelo);
+
+    private record IngRec(String descripcion, BigDecimal monto,
+                          String periodo) {
+        @Override public String toString() { return descripcion + " (" + monto + ")"; }
+    }
+
     public IngresosPanel(SessionFactory sf, Usuario usuario) {
         super(sf, usuario,
-                new String[]{"ID", "Descripción", "Monto", "Fecha", "Periodo"});
-
-                add(construirFormulario(), BorderLayout.SOUTH);
+                new String[]{"Descripción", "Monto", "Fecha", "Periodo"});
+        recurrentesLista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        recurrentesLista.addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    var rec = recurrentesLista.getSelectedValue();
+                    if (rec != null) {
+                        descripcionTxt.setText(rec.descripcion());
+                        montoTxt.setText(rec.monto().toPlainString());
+                        periodoTxt.setText(rec.periodo());
+                        fechaTxt.requestFocus();
+                    }
+                }
+            }
+        });
+        add(construirFormulario(), BorderLayout.EAST);
         cargarTabla();
+        cargarConceptosRecurrentes();
     }
 
         /* ======================================================
@@ -40,7 +64,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
         @Override protected void agregarFilaATabla(Ingresos i) {
             modelo.addRow(new Object[]{
-                    i.getId(),               // Ajusta getter
+                    i.getId(),
                     i.getDescripcionIngreso(),
                     i.getMontoIngreso(),
                     i.getFechaIngresos(),
@@ -105,7 +129,19 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
                 ing.setPeriodicidadIngreso    (per);
 
                 s.persist(ing);
+                if(recurrenteChk.isSelected()){
+                    var ci = new org.economix.model.ingresos.conceptoIngresos();
+                    ci.setNombreConcepto(desc);
+                    ci.setDescripcionConcepto(desc);
+                    ci.setPrecioConcepto(monto);
+                    ci.setIngresos(ing);
+                    s.persist(ci);
+                }
             });
+
+            if(recurrenteChk.isSelected()){
+                cargarConceptosRecurrentes();
+            }
 
             limpiarCampos();
             cargarTabla();
@@ -137,9 +173,29 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
                             montoTxt.setText("");
                                     fechaTxt.setText("");
                                             periodoTxt.setText("");
+                                                 recurrenteChk.setSelected(false);
                                                     idSeleccionado = null;
         }
-
+    /**
+     * Obtiene de la base de datos los ingresos recurrentes del usuario
+     * actual y los carga en la lista.
+     */
+    private void cargarConceptosRecurrentes(){
+        recurrentesModelo.clear();
+        try(Session s = sf.openSession()){
+            List<org.economix.model.ingresos.conceptoIngresos> lista = s.createQuery(
+                            "select c from conceptoIngresos c join c.ingresos i where i.usuario.id = :uid",
+                            org.economix.model.ingresos.conceptoIngresos.class)
+                    .setParameter("uid", usuario.getId())
+                    .list();
+            for(var c : lista){
+                recurrentesModelo.addElement(new IngRec(
+                        c.getNombreConcepto(),
+                        c.getPrecioConcepto(),
+                        c.getIngresos().getPeriodicidadIngreso()));
+            }
+        }
+    }
         /* ======================================================
          *                   Formulario UI
          * ====================================================== */
@@ -163,6 +219,12 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
             gc.gridx=0; gc.gridy=y; p.add(new JLabel("Periodo:"), gc);
                     gc.gridx=1; p.add(periodoTxt, gc); y++;
+
+            gc.gridx=0; gc.gridy=y; p.add(recurrenteChk, gc); gc.gridwidth=2; y++;
+            gc.gridx=0; gc.gridy=y; p.add(new JLabel("Ingresos recurrentes:"), gc); y++;
+            gc.gridx=0; gc.gridy=y; p.add(new JScrollPane(recurrentesLista), gc); y++;
+            gc.gridwidth=1;
+
 
             JPanel botones = new JPanel();
             JButton guardar = new JButton("Guardar");

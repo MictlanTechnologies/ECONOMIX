@@ -3,21 +3,24 @@ package org.economix.ventana.vista;
 import org.economix.model.usuario.Usuario;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 import javax.swing.*;
 import java.awt.*;
 
+
 /* --------------------------------------------------
- *  DIÁLOGO DE REGISTRO (PRIMERA EJECUCIÓN)
+ *  DIÁLOGO DE LOGIN (EJECUCIONES SUBSIGUIENTES)
  * -------------------------------------------------- */
-public class RegistroDialog extends JDialog {
+
+
+
+public class Login extends JDialog {
     private final JTextField usuarioTxt  = new JTextField(20);
     private final JPasswordField passTxt = new JPasswordField(20);
     private final SessionFactory sf;
 
-    public RegistroDialog(Frame owner, SessionFactory sf) {
-        super(owner, "Registro de usuario", true);
+    public Login(Frame owner, SessionFactory sf) {
+        super(owner, "Login", true);
         this.sf = sf;
         construirUI();
     }
@@ -34,36 +37,32 @@ public class RegistroDialog extends JDialog {
         gc.gridx = 0; gc.gridy = 1; add(new JLabel("Contraseña:"), gc);
         gc.gridx = 1; add(passTxt, gc);
 
-        JButton registrar = new JButton("Registrar y entrar");
-        registrar.addActionListener(e -> registrarAction());
+        JButton entrar = new JButton("Entrar");
+        entrar.addActionListener(e -> loginAction());
         gc.gridx = 0; gc.gridy = 2; gc.gridwidth = 2; gc.anchor = GridBagConstraints.CENTER;
-        add(registrar, gc);
+        add(entrar, gc);
 
         pack();
         setLocationRelativeTo(null);
     }
 
-    private void registrarAction() {
+    private void loginAction() {
         String user = usuarioTxt.getText().trim();
         String pass = new String(passTxt.getPassword());
 
-        if (user.isEmpty() || pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Usuario y contraseña obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+        Usuario encontrado;
+        try (Session s = sf.openSession()) {
+            encontrado = s.createQuery("from Usuario where perfilUsuario = :u", Usuario.class)
+                    .setParameter("u", user)
+                    .uniqueResult();
+        }
+
+        if (encontrado == null || !encontrado.getContraseñaUsuario().equals(pass)) {
+            JOptionPane.showMessageDialog(this, "Credenciales incorrectas", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Usuario nuevo = new Usuario();
-        nuevo.setPerfilUsuario(user);
-        nuevo.setContraseñaUsuario(pass);
-
-        try (Session s = sf.openSession()) {
-            Transaction tx = s.beginTransaction();
-            s.persist(nuevo);
-            tx.commit();
-        }
-
         dispose();
-        new PrincipalVentana(sf, nuevo).setVisible(true);
+        new PrincipalVentana(sf, encontrado).setVisible(true);
     }
 }
-

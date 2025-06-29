@@ -8,6 +8,8 @@ import org.hibernate.SessionFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -19,20 +21,46 @@ import java.util.List;
 public class GastosPanel extends GestorCatalogosSwing<Gastos> {
 
     // Campos del formulario
-    private final JTextField articuloTxt    = new JTextField(15);
+    private final JTextField articuloTxt = new JTextField(15);
     private final JTextField descripcionTxt = new JTextField(15);
-    private final JTextField montoTxt       = new JTextField(10);
-    private final JTextField fechaTxt       = new JTextField(10); // yyyy-MM-dd
-    private final JTextField periodoTxt     = new JTextField(12);
+    private final JTextField montoTxt = new JTextField(10);
+    private final JTextField fechaTxt = new JTextField(10); // yyyy-MM-dd
+    private final JTextField periodoTxt = new JTextField(12);
+
+    private final JCheckBox recurrenteChk = new JCheckBox("Gasto recurrente");
+    private final DefaultListModel<GastoRec> recurrentesModelo = new DefaultListModel<>();
+    private final JList<GastoRec> recurrentesLista = new JList<>(recurrentesModelo);
+
+    private record GastoRec(String articulo, String descripcion,
+                            BigDecimal monto, String periodo) {
+        @Override public String toString() {
+            return articulo + " (" + monto + ")";
+        }
+    }
 
     public GastosPanel(SessionFactory sf, Usuario usuario) {
         super(sf, usuario,
-                new String[]{"ID", "Artículo", "Descripción", "Monto", "Fecha", "Periodo"});
+                new String[]{"Artículo", "Descripción", "Monto", "Fecha", "Periodo"});
 
-        add(construirFormulario(), BorderLayout.SOUTH);
+        recurrentesLista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        recurrentesLista.addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    var info = recurrentesLista.getSelectedValue();
+                    if (info != null) {
+                        articuloTxt.setText(info.articulo());
+                        descripcionTxt.setText(info.descripcion());
+                        montoTxt.setText(info.monto().toPlainString());
+                        periodoTxt.setText(info.periodo());
+                        fechaTxt.requestFocus();
+                    }
+                }
+            }
+        });
+        add(construirFormulario(), BorderLayout.EAST);
         cargarTabla();
-    }
-
+        cargarConceptosRecurrentes();
+}
     /* =====================================================
      *          Implementación de métodos abstractos
      * ===================================================== */
@@ -78,11 +106,11 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
 
     @Override
     public void guardar() {
-        String art  = articuloTxt.getText().trim();
+        String art = articuloTxt.getText().trim();
         String desc = descripcionTxt.getText().trim();
-        String mon  = montoTxt.getText().trim();
-        String fec  = fechaTxt.getText().trim();
-        String per  = periodoTxt.getText().trim();
+        String mon = montoTxt.getText().trim();
+        String fec = fechaTxt.getText().trim();
+        String per = periodoTxt.getText().trim();
 
         if (art.isEmpty() || mon.isEmpty() || fec.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -110,13 +138,25 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
             } else {
                 g = s.get(Gastos.class, idSeleccionado);
             }
-            g.setArticuloGasto    (art);
+            g.setArticuloGasto(art);
             g.setDescripcionGastos(desc);
-            g.setMontoGastos      (monto);
-            g.setFechaGastos      (fecha);
-            g.setPeriodoGastos    (per);
+            g.setMontoGastos(monto);
+            g.setFechaGastos(fecha);
+            g.setPeriodoGastos(per);
             s.persist(g);
+            if (recurrenteChk.isSelected()) {
+                var cg = new org.economix.model.gastos.conceptoGastos();
+                cg.setNombreConcepto(art);
+                cg.setDescripcionConcepto(desc);
+                cg.setPrecioConcepto(monto);
+                cg.setGastos(g);
+                s.persist(cg);
+            }
         });
+
+        if (recurrenteChk.isSelected()) {
+            cargarConceptosRecurrentes();
+        }
 
         limpiarCampos();
         cargarTabla();
@@ -151,9 +191,32 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         montoTxt.setText("");
         fechaTxt.setText("");
         periodoTxt.setText("");
+        recurrenteChk.setSelected(false);
         idSeleccionado = null;
     }
 
+    /**
+     * Carga de la base de datos los gastos marcados como recurrentes
+     * por el usuario y los muestra en la lista lateral.
+     */
+    private void cargarConceptosRecurrentes(){
+        recurrentesModelo.clear();
+        try(Session s = sf.openSession()){
+            List<org.economix.model.gastos.conceptoGastos> lista = s.createQuery(
+                            "select c from conceptoGastos c join c.gastos g " +
+                                    "where g.usuario.id = :uid",
+                            org.economix.model.gastos.conceptoGastos.class)
+                    .setParameter("uid", usuario.getId())
+                    .list();
+            for(var c : lista){
+                recurrentesModelo.addElement(new GastoRec(
+                        c.getNombreConcepto(),
+                        c.getDescripcionConcepto(),
+                        c.getPrecioConcepto(),
+                        c.getGastos().getPeriodoGastos()));
+            }
+        }
+    }
     /* =====================================================
      *                    UI auxiliar
      * ===================================================== */
@@ -182,6 +245,11 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Periodo:"), gc);
         gc.gridx = 1; p.add(periodoTxt, gc); y++;
 
+        gc.gridx = 0; gc.gridy = y; p.add(recurrenteChk, gc); gc.gridwidth = 2; y++;
+        gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Gastos recurrentes:"), gc); y++;
+        gc.gridx = 0; gc.gridy = y; p.add(new JScrollPane(recurrentesLista), gc); y++;
+        gc.gridwidth = 1;
+
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton guardarBtn = new JButton("Guardar");
         JButton eliminarBtn = new JButton("Eliminar");
@@ -189,7 +257,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
 
         guardarBtn.addActionListener(e -> guardar());
         eliminarBtn.addActionListener(e -> eliminar());
-        limpiarBtn .addActionListener(e -> limpiarCampos());
+        limpiarBtn.addActionListener(e -> limpiarCampos());
 
         botones.add(guardarBtn);
         botones.add(eliminarBtn);

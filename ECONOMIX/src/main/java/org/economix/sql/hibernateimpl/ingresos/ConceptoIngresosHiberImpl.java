@@ -28,7 +28,7 @@ public class ConceptoIngresosHiberImpl implements GenericSql<conceptoIngresos>, 
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select c from ConceptoIngresos c join fetch c.ingresos",  // 👈
+                            "select c from conceptoIngresos c join fetch c.ingresos",
                             conceptoIngresos.class)
                     .getResultList();
         }

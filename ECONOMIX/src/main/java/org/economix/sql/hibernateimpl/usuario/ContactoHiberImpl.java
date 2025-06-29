@@ -29,7 +29,7 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from Contacto g join fetch g.usuario",  // 👈
+                            "select g from Contacto g join fetch g.persona",  // 👈
                             Contacto.class)
                     .getResultList();
         }
@@ -39,7 +39,7 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
 
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
-            // 1) Traer o referenciar el usuario
+            // 1) Traer o referenciar la persona
             Persona persona = session.getReference(Persona.class, idPersona);
             //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
             // 2) Vincular

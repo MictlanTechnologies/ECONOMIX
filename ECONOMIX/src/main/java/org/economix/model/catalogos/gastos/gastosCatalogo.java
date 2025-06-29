@@ -52,10 +52,6 @@ public class gastosCatalogo extends gestorCatalogos<Gastos> {
         System.out.print("> Periodo: ");
         gastos.setPeriodoGastos(readUtil.read());
 
-        /* …todo lo que ya tenías… */
-        System.out.print("> Periodo: ");
-        gastos.setPeriodoGastos(readUtil.read());
-
         /* ==== VINCULACIÓN AL USUARIO ==== */
         System.out.print("> ID del usuario que registra el gasto: ");
         Integer idUsuario = readUtil.readInt();

@@ -36,11 +36,17 @@ public abstract class GestorCatalogosSwing<T> extends JPanel implements GenericS
                                    String[] columnNames) {
         this.sf      = sf;
         this.usuario = usuario;
-        this.modelo  = new DefaultTableModel(columnNames, 0) {
+        // Inserta la columna ID al inicio para uso interno y la oculta de la vista
+        String[] cols = new String[columnNames.length + 1];
+        cols[0] = "ID";
+        System.arraycopy(columnNames, 0, cols, 1, columnNames.length);
+
+        this.modelo  = new DefaultTableModel(cols, 0) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         this.tabla   = new JTable(modelo);
-
+        // Ocultar la columna de la clave primaria
+        tabla.getColumnModel().removeColumn(tabla.getColumnModel().getColumn(0));
         setLayout(new BorderLayout(5,5));
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
@@ -59,9 +65,10 @@ public abstract class GestorCatalogosSwing<T> extends JPanel implements GenericS
     /** Acción por defecto al hacer doble‑clic en una fila. */
     private void onRowDoubleClick() {
         int fila = tabla.getSelectedRow();
-        if(fila == -1) return;
+        if (fila == -1) return;
         Object idCell = modelo.getValueAt(fila, 0);
-        if(idCell instanceof Number) idSeleccionado = (Number) idCell;
+        if (!(idCell instanceof Number)) return;
+        idSeleccionado = (Number) idCell;
         T entity = obtenerEntidadPorId(idSeleccionado);
         if(entity != null) cargarSeleccion(entity);
     }

@@ -18,7 +18,6 @@ import java.util.List;
 @Table(name = "tbl_persona")                       // ← igual que en la BD
 @Data @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class Persona extends Catalogo implements Serializable{
 
     @ToString.Include(name = "idUsuario")        // ★
@@ -54,4 +53,9 @@ public class Persona extends Catalogo implements Serializable{
     @JoinColumn(name = "idUsuario", nullable = false)
     @ToString.Exclude
     private Usuario usuario;
+
+    @Override
+    public String toString() {
+        return nombreP + " " + apellidoP + " " + apellidoM;
+    }
 }
