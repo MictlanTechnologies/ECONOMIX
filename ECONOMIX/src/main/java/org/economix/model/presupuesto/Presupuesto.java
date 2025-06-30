@@ -19,10 +19,6 @@ public class Presupuesto implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idPresupuesto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
-    private Usuario usuario;
-
     @Column(nullable = false, length = 40)
     private String categoria;
 
@@ -37,4 +33,8 @@ public class Presupuesto implements Serializable {
 
     @Column(nullable = false)
     private Integer anio;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUsuario", nullable = false)
+    private Usuario usuario;
 }

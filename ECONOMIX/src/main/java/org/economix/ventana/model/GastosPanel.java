@@ -1,8 +1,8 @@
-package org.economix.ventana.model.gastos;
+package org.economix.ventana.model;
 
 import org.economix.model.gastos.Gastos;
 import org.economix.model.usuario.Usuario;
-import org.economix.ventana.model.GestorCatalogosSwing;
+import org.economix.ventana.vista.GestorCatalogosSwing;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.economix.sql.hibernateimpl.presupuesto.PresupuestoHiberImpl;
@@ -33,6 +33,10 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
     private final JCheckBox recurrenteChk = new JCheckBox("Gasto recurrente");
     private final DefaultListModel<GastoRec> recurrentesModelo = new DefaultListModel<>();
     private final JList<GastoRec> recurrentesLista = new JList<>(recurrentesModelo);
+    private Runnable cambioListener;
+
+    /** Permite registrar un callback que se ejecuta tras guardar o eliminar. */
+    public void setCambioListener(Runnable r) { this.cambioListener = r; }
 
     private record GastoRec(String articulo, String descripcion,
                             BigDecimal monto, String periodo) {
@@ -63,6 +67,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         add(construirFormulario(), BorderLayout.EAST);
         cargarTabla();
         cargarConceptosRecurrentes();
+        if (cambioListener != null) cambioListener.run();
 }
     /* =====================================================
      *          Implementación de métodos abstractos
@@ -170,6 +175,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
 
         limpiarCampos();
         cargarTabla();
+        if (cambioListener != null) cambioListener.run();
     }
 
     @Override
@@ -192,6 +198,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
 
         limpiarCampos();
         cargarTabla();
+        if (cambioListener != null) cambioListener.run();
     }
 
     @Override
@@ -292,6 +299,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         JButton guardarBtn = new JButton("Guardar");
         JButton eliminarBtn = new JButton("Eliminar");
         JButton limpiarBtn  = new JButton("Limpiar");
+        JButton ayudaBtn    = new JButton("Ayuda");
 
         guardarBtn.addActionListener(e -> guardar());
         eliminarBtn.addActionListener(e -> eliminar());
@@ -300,10 +308,23 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         botones.add(guardarBtn);
         botones.add(eliminarBtn);
         botones.add(limpiarBtn);
+        botones.add(ayudaBtn);
 
         gc.gridx = 0; gc.gridy = y; gc.gridwidth = 2; gc.anchor = GridBagConstraints.CENTER;
         p.add(botones, gc);
 
+        ayudaBtn.addActionListener(e -> mostrarInfo());
+
         return p;
+    }
+
+    /** Describe brevemente cómo registrar y administrar gastos. */
+    private void mostrarInfo() {
+        JOptionPane.showMessageDialog(this,
+                "Use este formulario para registrar sus gastos.\n" +
+                        "Complete los datos y presione Guardar. Puede reutilizar\n" +
+                        "gastos frecuentes desde la lista de la izquierda.",
+                "Ayuda",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -19,7 +19,6 @@ import java.util.List;
 @Table(name = "tbl_gastos")                       // ← igual que en la BD
 @Data @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class Gastos extends Catalogo implements Serializable{
 
     @ToString.Include(name = "idUsuario")        // ★
@@ -56,4 +55,9 @@ public class Gastos extends Catalogo implements Serializable{
             cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude               // evita colección pesada
     private List<conceptoGastos> conceptoGastos = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return articuloGasto + " " + montoGastos + " ";
+    }
 }

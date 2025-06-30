@@ -5,7 +5,6 @@ import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
 import org.economix.model.catalogos.ingresos.ingresosCatalogo;
 import org.economix.model.catalogos.ingresos.conceptoIngresosCatalogo;
-import org.economix.model.catalogos.ingresos.presupuestoCatalogo;
 
 public class listaIngresos extends leerAcciones
 {
@@ -60,7 +59,7 @@ public class listaIngresos extends leerAcciones
                 ejecutable = conceptoIngresosCatalogo.getInstance();
                 break;
             case 3:
-                ejecutable = presupuestoCatalogo.getInstance();
+                flag=false;
                 break;
             case 4:
                 flag=false;

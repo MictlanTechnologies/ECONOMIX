@@ -3,7 +3,7 @@ package org.economix.ventana.model.usuario.personal;
 import org.economix.model.usuario.Domicilio;
 import org.economix.model.usuario.Persona;
 import org.economix.model.usuario.Usuario;
-import org.economix.ventana.model.GestorCatalogosSwing;
+import org.economix.ventana.vista.GestorCatalogosSwing;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 

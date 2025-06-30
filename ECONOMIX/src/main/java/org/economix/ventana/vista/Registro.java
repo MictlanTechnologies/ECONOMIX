@@ -35,9 +35,13 @@ public class Registro extends JDialog {
         gc.gridx = 1; add(passTxt, gc);
 
         JButton registrar = new JButton("Registrar y entrar");
+        JButton ayuda     = new JButton("Ayuda");
         registrar.addActionListener(e -> registrarAction());
+        ayuda.addActionListener(e -> mostrarInfo());
         gc.gridx = 0; gc.gridy = 2; gc.gridwidth = 2; gc.anchor = GridBagConstraints.CENTER;
         add(registrar, gc);
+        gc.gridy = 3;
+        add(ayuda, gc);
 
         pack();
         setLocationRelativeTo(null);
@@ -64,6 +68,13 @@ public class Registro extends JDialog {
 
         dispose();
         new PrincipalVentana(sf, nuevo).setVisible(true);
+    }
+
+    /** Explica brevemente el proceso de registro. */
+        private void mostrarInfo() {JOptionPane.showMessageDialog(this,
+                "Crea un nuevo usuario y contraseña para acceder por primera vez a ECONOMIX.",
+                "Ayuda",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }
 

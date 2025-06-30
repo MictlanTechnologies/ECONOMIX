@@ -1,4 +1,4 @@
-package org.economix.ventana.model;
+package org.economix.ventana.vista;
 
 /**
  * Contrato genérico para paneles CRUD Swing.

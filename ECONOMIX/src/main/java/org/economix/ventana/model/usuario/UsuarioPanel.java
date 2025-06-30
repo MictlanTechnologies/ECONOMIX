@@ -5,7 +5,7 @@ package org.economix.ventana.model.usuario;
  * Extiende {@link GestorCatalogosSwing} reutilizando la lógica CRUD genérica.
  */
 import org.economix.model.usuario.Usuario;
-import org.economix.ventana.model.GestorCatalogosSwing;
+import org.economix.ventana.vista.GestorCatalogosSwing;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -178,6 +178,7 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
         JButton eliminarBtn = new JButton("Eliminar");
         JButton limpiarBtn  = new JButton("Limpiar");
         JButton infoBtn     = new JButton("Información personal");
+        JButton ayudaBtn    = new JButton("Ayuda");
 
         guardarBtn.addActionListener(e -> guardar());
         eliminarBtn.addActionListener(e -> eliminar());
@@ -188,12 +189,23 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
         botones.add(eliminarBtn);
         botones.add(limpiarBtn);
         botones.add(infoBtn);
+        botones.add(ayudaBtn);
 
         gc.gridx = 0; gc.gridy = y; gc.gridwidth = 2; gc.anchor = GridBagConstraints.CENTER;
         p.add(botones, gc);
 
+        ayudaBtn.addActionListener(e -> mostrarInfo());
+
+
         return p;
     }
-
+        /** Indica cómo gestionar los datos de usuario desde este panel. */
+        private void mostrarInfo() {
+            JOptionPane.showMessageDialog(this,
+                "Desde aquí puedes modificar tu nombre de usuario y contraseña.\n" +
+                        "Usa el botón 'Información personal' para editar tus datos de contacto.",
+                "Ayuda",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
 }
 

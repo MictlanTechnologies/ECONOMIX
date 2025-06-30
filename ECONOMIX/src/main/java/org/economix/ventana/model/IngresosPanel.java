@@ -1,8 +1,8 @@
-package org.economix.ventana.model.ingresos;
+package org.economix.ventana.model;
 
 import org.economix.model.ingresos.Ingresos;
 import org.economix.model.usuario.Usuario;
-import org.economix.ventana.model.GestorCatalogosSwing;
+import org.economix.ventana.vista.GestorCatalogosSwing;
 import org.hibernate.SessionFactory;
 import org.hibernate.Session;
 
@@ -28,7 +28,10 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
     private final JCheckBox recurrenteChk = new JCheckBox("Ingreso recurrente");
     private final DefaultListModel<IngRec> recurrentesModelo = new DefaultListModel<>();
     private final JList<IngRec> recurrentesLista = new JList<>(recurrentesModelo);
+    private Runnable cambioListener;
 
+    /** Establece un callback a ejecutar tras guardar o eliminar. */
+    public void setCambioListener(Runnable r) { this.cambioListener = r; }
     private record IngRec(String descripcion, BigDecimal monto,
                           String periodo) {
         @Override public String toString() { return descripcion + " (" + monto + ")"; }
@@ -145,6 +148,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
             limpiarCampos();
             cargarTabla();
+            if(cambioListener != null) cambioListener.run();
         }
 
         @Override public void eliminar() {
@@ -166,6 +170,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
             limpiarCampos();
             cargarTabla();
+            if(cambioListener != null) cambioListener.run();
         }
 
         @Override public void limpiarCampos() {
@@ -228,18 +233,33 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
             JPanel botones = new JPanel();
             JButton guardar = new JButton("Guardar");
-                    JButton eliminar= new JButton("Eliminar");
-                    JButton limpiar = new JButton("Limpiar");
+            JButton eliminar= new JButton("Eliminar");
+            JButton limpiar = new JButton("Limpiar");
+            JButton ayudaBtn    = new JButton("Ayuda");
 
                     guardar.addActionListener(e->guardar());
             eliminar.addActionListener(e->eliminar());
             limpiar .addActionListener(e->limpiarCampos());
 
-            botones.add(guardar); botones.add(eliminar); botones.add(limpiar);
+            botones.add(guardar);
+            botones.add(eliminar);
+            botones.add(limpiar);
+            botones.add(ayudaBtn);
 
             gc.gridx=0; gc.gridy=y; gc.gridwidth=2; gc.anchor= GridBagConstraints.CENTER;
             p.add(botones, gc);
 
+            ayudaBtn.addActionListener(e -> mostrarInfo());
+
             return p;
         }
+
+    /** Explica cómo registrar ingresos y utilizar la lista de recurrentes. */
+    private void mostrarInfo() {
+        JOptionPane.showMessageDialog(this,
+                "Registra aquí tus ingresos.\n" +
+                        "Puedes guardar ingresos frecuentes y reutilizarlos desde la lista.",
+                "Ayuda",
+                JOptionPane.INFORMATION_MESSAGE);
     }
+}

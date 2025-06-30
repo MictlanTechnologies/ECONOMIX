@@ -1,4 +1,4 @@
-package org.economix.ventana.model.simulador;
+package org.economix.ventana.model;
 
 import org.economix.model.gastos.Gastos;
 import org.economix.model.ingresos.Ingresos;
@@ -19,17 +19,34 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
+
 /**
  * Panel con gráficos usando JFreeChart.
  */
 public class GraficasPanel extends JPanel {
+    private final SessionFactory sf;
+    private final Usuario usuario;
+
     public GraficasPanel(SessionFactory sf, Usuario usuario){
+        this.sf = sf;
+        this.usuario = usuario;
         setLayout(new GridLayout(1,2));
-        add(crearPie(sf, usuario));
-        add(crearBarra(sf, usuario));
+        actualizar();
     }
 
-    private ChartPanel crearPie(SessionFactory sf, Usuario usuario){
+    /**
+     * Recarga los datos desde la base y reconstruye las gráficas.
+     * Se puede invocar cada vez que el usuario navega al panel.
+     */
+    public void actualizar(){
+        removeAll();
+        add(crearPie());
+        add(crearBarra());
+        revalidate();
+        repaint();
+    }
+
+    private ChartPanel crearPie(){
         DefaultPieDataset<String> ds = new DefaultPieDataset<>();
         try(Session s = sf.openSession()){
             List<Object[]> rows = s.createQuery(
@@ -49,7 +66,7 @@ public class GraficasPanel extends JPanel {
         return new ChartPanel(chart);
     }
 
-    private ChartPanel crearBarra(SessionFactory sf, Usuario usuario){
+    private ChartPanel crearBarra(){
         Map<String, BigDecimal> ing = new HashMap<>();
         Map<String, BigDecimal> gas = new HashMap<>();
         try(Session s = sf.openSession()){

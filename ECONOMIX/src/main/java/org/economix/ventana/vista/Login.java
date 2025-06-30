@@ -38,9 +38,13 @@ public class Login extends JDialog {
         gc.gridx = 1; add(passTxt, gc);
 
         JButton entrar = new JButton("Entrar");
+        JButton ayuda  = new JButton("Ayuda");
         entrar.addActionListener(e -> loginAction());
+        ayuda.addActionListener(e -> mostrarInfo());
         gc.gridx = 0; gc.gridy = 2; gc.gridwidth = 2; gc.anchor = GridBagConstraints.CENTER;
         add(entrar, gc);
+        gc.gridy = 3;
+        add(ayuda, gc);
 
         pack();
         setLocationRelativeTo(null);
@@ -64,5 +68,13 @@ public class Login extends JDialog {
 
         dispose();
         new PrincipalVentana(sf, encontrado).setVisible(true);
+    }
+
+        /** Muestra instrucciones básicas de uso del diálogo de login. */
+        private void mostrarInfo() {
+            JOptionPane.showMessageDialog(this,
+                "Ingresa tu nombre de usuario y contraseña registrados para acceder a la aplicación.",
+                "Ayuda",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }
