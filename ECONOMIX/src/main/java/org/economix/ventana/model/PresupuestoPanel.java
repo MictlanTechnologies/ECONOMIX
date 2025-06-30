@@ -29,6 +29,9 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
     private final JProgressBar barra      = new JProgressBar(0, 100);
     private final JProgressBar barraTotal = new JProgressBar(0, 100);
 
+    private int ultimoPctCategoria = -1;
+    private int ultimoPctTotal     = -1;
+
     public PresupuestoPanel(SessionFactory sf, Usuario u) {
         super(sf, u, new String[]{"Categoría", "Límite", "Gastado", "%"});
         barra.setStringPainted(true);
@@ -92,7 +95,14 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
                 JOptionPane.showMessageDialog(this, "Categoría y gasto requeridos", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
+        BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
+        BigDecimal usado = gastoSel.getMontoGastos();
+        if (usado.compareTo(max) > 0) {
+            JOptionPane.showMessageDialog(this,
+                    "El gasto seleccionado excede el límite elegido",
+                    "Límite superado", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
             YearMonth hoy = YearMonth.now();
             final Presupuesto[] saved = new Presupuesto[1];
             dentroDeTransaccion(s -> {
@@ -112,8 +122,10 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
                 s.persist(p);
                 saved[0] = p;
             });
-            if (saved[0] != null) actualizarBarra(saved[0]);
-            actualizarBarraTotal();
+        if (saved[0] != null) {
+            actualizarBarra(saved[0]);
+        }
+        actualizarBarraTotal();
             limpiarCampos();
             cargarTabla();
         }
@@ -182,14 +194,17 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         private void mostrarInfo() {
             JOptionPane.showMessageDialog(this,
                     "Seleccione la categoría y vincule un gasto registrado con un " +
-                            "ingreso.\nEl deslizador representa el monto disponible del " +
-                            "ingreso y se descontará con el gasto elegido.\n" +
-                            "La primera barra muestra el porcentaje restante de ese " +
-                            "ingreso y la segunda refleja el total ingresos vs gastos.",
+                            "ingreso.\nEl deslizador indica cuánto dinero hay disponible y " +
+                            "no permite exceder esa cantidad.\n" +
+                            "La barra superior muestra qué porcentaje de ese ingreso " +
+                            "has usado y cambia de color al acercarte al límite. Si lo " +
+                            "superas, se mostrará una advertencia.\n" +
+                            "La segunda barra resume el total de tus ingresos contra " +
+                            "los gastos registrados y también te avisará cuando los " +
+                            "gastos sean muy altos.",
                     "Ayuda",
                     JOptionPane.INFORMATION_MESSAGE);
         }
-
         private void actualizarBarra(Presupuesto p) {
             int pct = p.getMontoGastado()
                     .divide(p.getMontoMaximo(), 2, RoundingMode.HALF_UP)
@@ -199,25 +214,29 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
             barra.setForeground(
                     pct < 70 ? Color.GREEN :
                             pct < 90 ? Color.ORANGE : Color.RED);
+            mostrarAdvertencia(pct, false);
         }
 
-        private void cargarCombos() {
-            gastoCmb.removeAllItems();
-            ingresoCmb.removeAllItems();
-            try (Session s = sf.openSession()) {
-                List<Gastos> gs = s.createQuery(
-                                "from Gastos where usuario.id = :uid", Gastos.class)
-                        .setParameter("uid", usuario.getId())
-                        .list();
-                for (Gastos g : gs) gastoCmb.addItem(g);
+    private boolean listenersInit = false;
 
-                List<Ingresos> ins = s.createQuery(
-                                "from Ingresos where usuario.id = :uid", Ingresos.class)
-                        .setParameter("uid", usuario.getId())
-                        .list();
-                for (Ingresos i : ins) ingresoCmb.addItem(i);
-            }
+    private void cargarCombos() {
+        gastoCmb.removeAllItems();
+        ingresoCmb.removeAllItems();
+        try (Session s = sf.openSession()) {
+            List<Gastos> gs = s.createQuery(
+                            "from Gastos where usuario.id = :uid", Gastos.class)
+                    .setParameter("uid", usuario.getId())
+                    .list();
+            for (Gastos g : gs) gastoCmb.addItem(g);
 
+            List<Ingresos> ins = s.createQuery(
+                            "from Ingresos where usuario.id = :uid", Ingresos.class)
+                    .setParameter("uid", usuario.getId())
+                    .list();
+            for (Ingresos i : ins) ingresoCmb.addItem(i);
+        }
+
+        if (!listenersInit) {
             ingresoCmb.addActionListener(e -> {
                 Ingresos ing = (Ingresos) ingresoCmb.getSelectedItem();
                 if (ing != null) {
@@ -229,61 +248,83 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
 
             gastoCmb.addActionListener(e -> actualizarBarraManual());
             limiteSld.addChangeListener(e -> actualizarBarraManual());
+            listenersInit = true;
         }
-        /** Vuelve a cargar datos de combos y tabla. */
-        public void actualizar() {
-            cargarCombos();
-            cargarTabla();
-        }
-        private void actualizarBarraManual() {
-            Ingresos ing = (Ingresos) ingresoCmb.getSelectedItem();
-            Gastos g = (Gastos) gastoCmb.getSelectedItem();
-            limiteValLbl.setText(String.valueOf(limiteSld.getValue()));
-            if (ing == null || g == null) {
-                barra.setValue(0);
-                barra.setString("0% usado");
-                return;
-            }
-            BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
-            BigDecimal usado = g.getMontoGastos();
-            int pct = usado.divide(max, 2, RoundingMode.HALF_UP)
-                    .movePointRight(2).intValue();
-            barra.setValue(pct);
-            barra.setString(pct + "% usado");
-            barra.setForeground(
-                    pct < 70 ? Color.GREEN :
-                            pct < 90 ? Color.ORANGE : Color.RED);
-        }
-
-        private void actualizarBarraTotal() {
-            BigDecimal ingTotal;
-            BigDecimal gasTotal;
-            try (Session s = sf.openSession()) {
-                ingTotal = s.createQuery(
-                                "select coalesce(sum(i.montoIngreso),0) from Ingresos i " +
-                                        "where i.usuario.id = :uid", BigDecimal.class)
-                        .setParameter("uid", usuario.getId())
-                        .uniqueResult();
-                gasTotal = s.createQuery(
-                                "select coalesce(sum(g.montoGastos),0) from Gastos g " +
-                                        "where g.usuario.id = :uid", BigDecimal.class)
-                        .setParameter("uid", usuario.getId())
-                        .uniqueResult();
-            }
-
-            if (ingTotal.compareTo(BigDecimal.ZERO) == 0) {
-                barraTotal.setValue(0);
-                barraTotal.setString("Sin ingresos");
-                return;
-            }
-
-            int pct = gasTotal.divide(ingTotal, 2, RoundingMode.HALF_UP)
-                    .movePointRight(2).intValue();
-            barraTotal.setValue(pct);
-            barraTotal.setString(pct + "% gastado");
-            barraTotal.setForeground(
-                    pct < 70 ? Color.GREEN :
-                            pct < 90 ? Color.ORANGE : Color.RED);
-        }
-
     }
+
+    /** Vuelve a cargar datos de combos y tabla. */
+    public void actualizar() {
+        cargarCombos();
+        cargarTabla();
+    }
+
+    private void actualizarBarraManual() {
+        Ingresos ing = (Ingresos) ingresoCmb.getSelectedItem();
+        Gastos g = (Gastos) gastoCmb.getSelectedItem();
+        limiteValLbl.setText(String.valueOf(limiteSld.getValue()));
+        if (ing == null || g == null) {
+            barra.setValue(0);
+            barra.setString("0% usado");
+            return;
+        }
+        BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
+        BigDecimal usado = g.getMontoGastos();
+        int pct = usado.divide(max, 2, RoundingMode.HALF_UP)
+                .movePointRight(2).intValue();
+        barra.setValue(pct);
+        barra.setString(pct + "% usado");
+        barra.setForeground(
+                pct < 70 ? Color.GREEN :
+                        pct < 90 ? Color.ORANGE : Color.RED);
+        mostrarAdvertencia(pct, false);
+    }
+
+    private void actualizarBarraTotal() {
+        BigDecimal ingTotal;
+        BigDecimal gasTotal;
+        try (Session s = sf.openSession()) {
+            ingTotal = s.createQuery(
+                            "select coalesce(sum(i.montoIngreso),0) from Ingresos i " +
+                                    "where i.usuario.id = :uid", BigDecimal.class)
+                    .setParameter("uid", usuario.getId())
+                    .uniqueResult();
+            gasTotal = s.createQuery(
+                            "select coalesce(sum(g.montoGastos),0) from Gastos g " +
+                                    "where g.usuario.id = :uid", BigDecimal.class)
+                    .setParameter("uid", usuario.getId())
+                    .uniqueResult();
+        }
+
+        if (ingTotal.compareTo(BigDecimal.ZERO) == 0) {
+            barraTotal.setValue(0);
+            barraTotal.setString("Sin ingresos");
+            return;
+        }
+
+        int pct = gasTotal.divide(ingTotal, 2, RoundingMode.HALF_UP)
+                .movePointRight(2).intValue();
+        barraTotal.setValue(pct);
+        barraTotal.setString(pct + "% gastado");
+        barraTotal.setForeground(
+                pct < 70 ? Color.GREEN :
+                        pct < 90 ? Color.ORANGE : Color.RED);
+        mostrarAdvertencia(pct, true);
+    }
+
+    /** Muestra avisos cuando el porcentaje sobrepasa ciertos límites. */
+    private void mostrarAdvertencia(int pct, boolean total) {
+        int last = total ? ultimoPctTotal : ultimoPctCategoria;
+        if (pct >= 100 && last < 100) {
+            JOptionPane.showMessageDialog(this,
+                    total ? "Has gastado más de lo que ingresas" :
+                            "Se excedió el presupuesto de la categoría",
+                    "Límite superado", JOptionPane.WARNING_MESSAGE);
+        } else if (pct >= 90 && last < 90) {
+            JOptionPane.showMessageDialog(this,
+                    total ? "Cuidado: tus gastos casi igualan a tus ingresos" :
+                            "Cuidado: estás por alcanzar el límite de esta categoría",
+                    "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        }
+        if (total) ultimoPctTotal = pct; else ultimoPctCategoria = pct;
+    }
+}

@@ -66,6 +66,13 @@
             <version>1.5.3</version>
         </dependency>
 
+        <!-- Biblioteca para reproducir video en Swing -->
+        <dependency>
+            <groupId>uk.co.caprica</groupId>
+            <artifactId>vlcj</artifactId>
+            <version>4.7.1</version>
+        </dependency>
+
     </dependencies>
 
 

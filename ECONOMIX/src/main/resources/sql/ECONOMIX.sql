@@ -204,8 +204,8 @@ CREATE TABLE IF NOT EXISTS `economix`.`tbl_presupuesto` (
   `anio` INT NOT NULL,
   PRIMARY KEY (`idPresupuesto`),
   CONSTRAINT `tbl_presupuesto_ibfk_1`
-    FOREIGN KEY (`idIngresos`)
-    REFERENCES `economix`.`tbl_ingresos` (`idIngresos`))
+    FOREIGN KEY (`idUsuario`)
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
