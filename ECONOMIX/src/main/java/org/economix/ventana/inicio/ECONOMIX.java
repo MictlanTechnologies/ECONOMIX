@@ -6,6 +6,7 @@ import org.economix.ventana.vista.Login;
 import org.economix.ventana.vista.Registro;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.economix.ventana.vista.PantallaInicio;
 
 import javax.swing.*;
 
@@ -18,17 +19,7 @@ public class ECONOMIX {
         FlatDarculaLaf.setup();
         SwingUtilities.invokeLater(() -> {
             SessionFactory sf = HibernateUtil.getSessionFactory();
-            long totalUsuarios;
-            try (Session s = sf.openSession()) {
-                totalUsuarios = s.createQuery("select count(u) from Usuario u", Long.class)
-                        .uniqueResult();
-            }
-
-            if (totalUsuarios == 0) {
-                new Registro(null, sf).setVisible(true);
-            } else {
-                new Login(null, sf).setVisible(true);
-            }
+            new PantallaInicio(sf).setVisible(true);
         });
     }
 }

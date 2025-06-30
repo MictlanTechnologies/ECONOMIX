@@ -23,6 +23,7 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
         super(sf, usuarioActual, new String[]{"Nombre de usuario"});
         add(construirFormulario(), BorderLayout.SOUTH);
         cargarTabla();
+        cargarSeleccion(usuario);
     }
 
     /* =====================================================
@@ -37,12 +38,12 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
         modelo.addRow(new Object[]{u.getId(), u.getPerfilUsuario()});
     }
 
-    /** Lista TODOS los usuarios */
+    /** Lista solo el usuario actual */
     @Override
     public void cargarTabla() {
         try (Session s = sf.openSession()) {
-            List<Usuario> lista = s.createQuery("from Usuario", Usuario.class).list();
-            refrescarTabla(lista);
+            Usuario u = s.get(Usuario.class, usuario.getId());
+            refrescarTabla(java.util.List.of(u));
         }
     }
 
@@ -57,7 +58,7 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
         passTxt.setText(""); // obligar a introducir nueva si se desea cambiar
     }
 
-    /** Inserta un nuevo usuario o actualiza el seleccionado. */
+    /** Actualiza los datos del usuario actual. */
     @Override
     public void guardar() {
         String perfil = perfilTxt.getText().trim();
@@ -69,62 +70,28 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
                     "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        // Al crear: contraseña obligatoria; al editar puede quedar vacía para mantener la actual
-        if (idSeleccionado == null && pass.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Contraseña obligatoria para un nuevo usuario",
-                    "Datos incompletos", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        dentroDeTransaccion(session -> {
-            Usuario u;
-            if (idSeleccionado == null) {
-                u = new Usuario();
-            } else {
-                u = session.get(Usuario.class, idSeleccionado);
-            }
-
+            dentroDeTransaccion(session -> {
+            Usuario u = session.get(Usuario.class, usuario.getId());
             u.setPerfilUsuario(perfil);
             if (!pass.isEmpty()) {
-                u.setContraseñaUsuario(pass); // TODO: aplicar hash aquí
+                u.setContraseñaUsuario(pass);
             }
             session.persist(u);
         });
+
+        usuario.setPerfilUsuario(perfil);
+        if (!pass.isEmpty()) usuario.setContraseñaUsuario(pass);
 
         limpiarCampos();
         cargarTabla();
     }
 
-    /** Elimina el usuario seleccionado (no permite borrar el que está logeado) */
+     /** No se permite eliminar el usuario desde este panel */
     @Override
     public void eliminar() {
-        if (idSeleccionado == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Selecciona un usuario para eliminar",
-                    "Sin selección", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        if (idSeleccionado.equals(usuario.getId())) {
-            JOptionPane.showMessageDialog(this,
-                    "No puedes eliminar tu propio usuario activo",
-                    "Operación no permitida", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Eliminar el usuario seleccionado?", "Confirmar",
-                JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
-
-        dentroDeTransaccion(session -> {
-            Usuario u = session.get(Usuario.class, idSeleccionado);
-            if (u != null) session.remove(u);
-        });
-
-        limpiarCampos();
-        cargarTabla();
+        JOptionPane.showMessageDialog(this,
+                "No tienes permisos para eliminar usuarios",
+                "Operación no permitida", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
@@ -175,18 +142,15 @@ public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
 
         JPanel botones = new JPanel();
         JButton guardarBtn = new JButton("Guardar");
-        JButton eliminarBtn = new JButton("Eliminar");
         JButton limpiarBtn  = new JButton("Limpiar");
         JButton infoBtn     = new JButton("Información personal");
         JButton ayudaBtn    = new JButton("Ayuda");
 
         guardarBtn.addActionListener(e -> guardar());
-        eliminarBtn.addActionListener(e -> eliminar());
         limpiarBtn .addActionListener(e -> limpiarCampos());
         infoBtn   .addActionListener(e -> mostrarDialogoPersonal());
 
         botones.add(guardarBtn);
-        botones.add(eliminarBtn);
         botones.add(limpiarBtn);
         botones.add(infoBtn);
         botones.add(ayudaBtn);

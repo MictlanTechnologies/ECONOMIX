@@ -20,7 +20,7 @@ public class Login extends JDialog {
     private final SessionFactory sf;
 
     public Login(Frame owner, SessionFactory sf) {
-        super(owner, "Login", true);
+        super(owner, "Inicio de Sesión", true);
         this.sf = sf;
         construirUI();
     }
