@@ -86,7 +86,7 @@ public class PantallaInicio extends JFrame {
 
     /** Establece un GIF como fondo de la pantalla. */
     public void setBackgroundGif(String path) {
-        background.setIcon(new ImageIcon("ECONOMIX_background.gif"));
+        background.setIcon(new ImageIcon(""));
     }
 
     /** Establece un video de fondo utilizando vlcj. */
@@ -96,7 +96,7 @@ public class PantallaInicio extends JFrame {
         }
         mediaPlayer = new EmbeddedMediaPlayerComponent();
         background.add(mediaPlayer, BorderLayout.CENTER);
-        mediaPlayer.mediaPlayer().media().play(path);
+        mediaPlayer.mediaPlayer().media().play("");
     }
 
     /** Espacio para definir la imagen del logo. */
