@@ -28,6 +28,6 @@
 		<mapping class="org.economix.model.usuario.Usuario"/>
 		<mapping class="org.economix.model.ingresos.Ingresos"/>
 		<mapping class="org.economix.model.ingresos.conceptoIngresos"/>
-		<mapping class="org.economix.model.ingresos.Presupuesto"/>
+		<mapping class="org.economix.model.presupuesto.Presupuesto"/>
 	</session-factory>
 </hibernate-configuration>

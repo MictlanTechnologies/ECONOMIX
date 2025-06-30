@@ -196,11 +196,12 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `economix`.`tbl_presupuesto` (
   `idPresupuesto` INT NOT NULL AUTO_INCREMENT,
-  `fechaPresupuesto` DATE NULL DEFAULT NULL,
-  `fechaActualizaciónP` DATE NULL DEFAULT NULL,
-  `periodoTPresupuesto` VARCHAR(50) NULL DEFAULT NULL,
-  `montoPresupuesto` DECIMAL(10,2) NULL DEFAULT NULL,
-  `idIngresos` INT NULL DEFAULT NULL,
+  `idUsuario` INT NOT NULL,
+  `categoria` VARCHAR(40) NOT NULL,
+  `montoMaximo` DECIMAL(12,2) NOT NULL,
+  `montoGastado` DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  `mes` INT NOT NULL,
+  `anio` INT NOT NULL,
   PRIMARY KEY (`idPresupuesto`),
   CONSTRAINT `tbl_presupuesto_ibfk_1`
     FOREIGN KEY (`idIngresos`)
@@ -210,7 +211,8 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 SHOW WARNINGS;
-CREATE INDEX `idIngresos` ON `economix`.`tbl_presupuesto` (`idIngresos` ASC) VISIBLE;
+
+CREATE INDEX `idUsuario` ON `economix`.`tbl_presupuesto` (`idUsuario` ASC) VISIBLE;
 
 SHOW WARNINGS;
 

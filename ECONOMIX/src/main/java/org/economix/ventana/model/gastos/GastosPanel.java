@@ -5,11 +5,14 @@ import org.economix.model.usuario.Usuario;
 import org.economix.ventana.model.GestorCatalogosSwing;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.economix.sql.hibernateimpl.presupuesto.PresupuestoHiberImpl;
+import org.economix.model.presupuesto.Presupuesto;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -130,6 +133,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
             return;
         }
 
+        final Gastos[] saved = new Gastos[1];
         dentroDeTransaccion(s -> {
             Gastos g;
             if (idSeleccionado == null) {
@@ -144,6 +148,8 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
             g.setFechaGastos(fecha);
             g.setPeriodoGastos(per);
             s.persist(g);
+            saved[0] = g;
+
             if (recurrenteChk.isSelected()) {
                 var cg = new org.economix.model.gastos.conceptoGastos();
                 cg.setNombreConcepto(art);
@@ -153,6 +159,10 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
                 s.persist(cg);
             }
         });
+
+        if (saved[0] != null) {
+            registrarGasto(saved[0]);
+        }
 
         if (recurrenteChk.isSelected()) {
             cargarConceptosRecurrentes();
@@ -214,6 +224,34 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
                         c.getDescripcionConcepto(),
                         c.getPrecioConcepto(),
                         c.getGastos().getPeriodoGastos()));
+            }
+        }
+    }
+
+    /**
+     * Actualiza el presupuesto asociado al gasto y muestra alerta si supera el 80%.
+     */
+    private void registrarGasto(Gastos g) {
+        var ph  = PresupuestoHiberImpl.get();
+        var hoy = g.getFechaGastos().toLocalDate();
+        Presupuesto pres = ph.buscarActivo(
+                g.getArticuloGasto(),
+                usuario,
+                hoy.getMonthValue(),
+                hoy.getYear());
+
+        if (pres != null) {
+            ph.agregarGasto(pres, g.getMontoGastos());
+
+            BigDecimal pct = pres.getMontoGastado()
+                    .divide(pres.getMontoMaximo(), 2, RoundingMode.HALF_UP);
+
+            if (pct.compareTo(new BigDecimal("0.80")) >= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "¡Ojo! Has usado el " +
+                                pct.movePointRight(2).intValue() + "% de tu presupuesto de " +
+                                pres.getCategoria(),
+                        "Alerta", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
