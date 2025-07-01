@@ -3,7 +3,6 @@ package org.economix.ventana.vista;
 import org.economix.model.usuario.Usuario;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.economix.util.IconUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +11,8 @@ import java.awt.*;
 /* --------------------------------------------------
  *  DIÁLOGO DE LOGIN (EJECUCIONES SUBSIGUIENTES)
  * -------------------------------------------------- */
+
+
 
 public class Login extends JDialog {
     private final JTextField usuarioTxt  = new JTextField(20);

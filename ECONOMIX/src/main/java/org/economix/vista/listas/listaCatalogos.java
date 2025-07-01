@@ -1,70 +1,89 @@
+// Paquete que contiene la lista de menús disponibles para ECONOMIX
 package org.economix.vista.listas;
 
 import org.economix.vista.acciones.Ejecutable;
 import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
 
-public class listaCatalogos extends leerAcciones
-{
-    public static org.economix.vista.listas.listaCatalogos listaCatalogos;
-    private listaCatalogos()
-    {
+/**
+ * Menú principal de acceso a catálogos del sistema ECONOMIX.
+ * Desde aquí el usuario puede acceder al menú de usuarios o a las funciones adicionales.
+ * Implementa patrón Singleton.
+ */
+public class listaCatalogos extends leerAcciones {
+
+    // Instancia única del menú de catálogos
+    public static listaCatalogos listaCatalogos;
+
+    /** Constructor privado para implementar Singleton */
+    private listaCatalogos() {
     }
-    public static org.economix.vista.listas.listaCatalogos getInstance( )
-    {
-        if(listaCatalogos==null)
-        {
+
+    /**
+     * Devuelve la instancia única del menú de catálogos.
+     * devuelve instancia de listaCatalogos
+     */
+    public static listaCatalogos getInstance() {
+        if (listaCatalogos == null) {
             listaCatalogos = new listaCatalogos();
         }
         return listaCatalogos;
     }
 
+    /**
+     * Muestra las opciones disponibles en el menú ECONOMIX.
+     */
     @Override
-    public void despliegaMenu()
-    {
+    public void despliegaMenu() {
         System.out.println("\n\t::: Menu ECONOMIX :::");
         System.out.println("\t> Selecciona una opción:");
-        System.out.println( "1.- Usuario");
-        System.out.println( "2.- Funciones");
-        System.out.println( "3.- Salir");
+        System.out.println("1.- Usuario");
+        System.out.println("2.- Funciones");
+        System.out.println("3.- Salir");
         Menu.seleccionaOpcion();
     }
 
+    /**
+     * Límite inferior de opciones permitidas.
+     * devuelve 1
+     */
     @Override
-    public int valorMinMenu()
-    {
+    public int valorMinMenu() {
         return 1;
     }
+
+    /**
+     * Límite superior de opciones permitidas.
+     * devuelve 3
+     */
     @Override
-    public int valorMaxMenu()
-    {
+    public int valorMaxMenu() {
         return 3;
     }
 
+    /**
+     * Ejecuta la acción correspondiente a la opción seleccionada.
+     */
     @Override
-    public void procesaOpcion()
-    {
+    public void procesaOpcion() {
         Ejecutable ejecutable = null;
-        switch(opcion)
-        {
+        switch (opcion) {
             case 1:
-                ejecutable = listaUsuario.getInstance();
+                ejecutable = listaUsuario.getInstance(); // Submenú de gestión de usuarios
                 break;
             case 2:
-                ejecutable = listaFunciones.getInstance();
+                ejecutable = listaFunciones.getInstance(); // Submenú de otras funciones (gastos, ingresos, etc.)
                 break;
             case 3:
-                flag = false;
+                flag = false; // Salir del menú
                 break;
             default:
-                Menu.opcionInvalida();
+                Menu.opcionInvalida(); // Manejo de error
                 break;
         }
-        if(ejecutable!=null)
-        {
+        if (ejecutable != null) {
             ejecutable.setFlag(true);
             ejecutable.run();
         }
     }
 }
-

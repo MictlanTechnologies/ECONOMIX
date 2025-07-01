@@ -1,21 +1,34 @@
+// Implementación de operaciones CRUD para Contacto usando Hibernate
 package org.economix.sql.hibernateimpl.usuario;
 
 import org.economix.model.usuario.Persona;
 import org.economix.util.HibernateUtil;
 import org.economix.sql.GenericSql;
 import org.economix.model.usuario.Contacto;
-import org.economix.model.usuario.Usuario;
 import org.economix.vista.acciones.Ejecutable;
 import org.hibernate.Session;
 
 import java.util.List;
 
+/**
+ * Clase que implementa las operaciones de persistencia (CRUD) para la entidad { Contacto}
+ * utilizando Hibernate. También implementa { Ejecutable} para posible ejecución desde menú.
+ *
+ * Esta clase sigue el patrón Singleton y expone métodos para manejar la relación
+ * entre contactos y personas.
+ */
 public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
+
+    /** Instancia única (Singleton). */
     private static ContactoHiberImpl contactoHiber;
 
-    private ContactoHiberImpl() {
-    }
+    /** Constructor privado para evitar instanciación directa. */
+    private ContactoHiberImpl() {}
 
+    /**
+     * Devuelve la instancia Singleton de la clase.
+     * @return instancia única de {@code ContactoHiberImpl}
+     */
     public static ContactoHiberImpl getInstance() {
         if (contactoHiber == null) {
             contactoHiber = new ContactoHiberImpl();
@@ -23,44 +36,57 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         return contactoHiber;
     }
 
-
+    /**
+     * Obtiene todos los contactos, incluyendo su relación con persona (fetch).
+     * devuelve lista de objetos { Contacto}
+     */
     @Override
-    public List<Contacto> findAll() {           // ← cambia Entidad por el tipo correcto
+    public List<Contacto> findAll() {
         try (Session session = HibernateUtil.getSession()) {
             return session
-                    .createQuery(
-                            "select g from Contacto g join fetch g.persona",  // 👈
-                            Contacto.class)
+                    .createQuery("select g from Contacto g join fetch g.persona", Contacto.class)
                     .getResultList();
         }
     }
 
+    /**
+     * Guarda un nuevo contacto, asociándolo con una persona mediante su ID.
+     * @param contacto objeto {@link Contacto} a guardar
+     * @param idPersona ID de la persona asociada
+     * devuelve true si se guardó correctamente
+     */
     public boolean save(Contacto contacto, Long idPersona) {
-
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
-            // 1) Traer o referenciar la persona
+            // Asocia contacto con persona existente
             Persona persona = session.getReference(Persona.class, idPersona);
-            //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
-            // 2) Vincular
             contacto.setPersona(persona);
-            // 3) Persistir
             session.persist(contacto);
             session.getTransaction().commit();
             return true;
         }
     }
 
+    /**
+     * Guarda un nuevo contacto de forma directa (sin asociación explícita).
+     * @param contacto contacto a persistir
+     * devuelve true si fue exitoso
+     */
     @Override
     public boolean save(Contacto contacto) {
         Session session = HibernateUtil.getSession();
-        session.beginTransaction(); //Crea un conjunto de instrucciones
+        session.beginTransaction();
         session.persist(contacto);
-        session.getTransaction().commit(); //Crea un commit de todo el conjunto de instrucciones
+        session.getTransaction().commit();
         session.close();
         return true;
     }
 
+    /**
+     * Actualiza un contacto existente en la base de datos.
+     * @param contacto objeto actualizado
+     * devuelve true si la operación fue exitosa
+     */
     @Override
     public boolean update(Contacto contacto) {
         Session session = HibernateUtil.getSession();
@@ -71,6 +97,11 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         return true;
     }
 
+    /**
+     * Elimina un contacto de la base de datos.
+     * @param contacto objeto a eliminar
+     * devuelve true si fue eliminado correctamente o no existía
+     */
     @Override
     public boolean delete(Contacto contacto) {
         Session session = HibernateUtil.getSession();
@@ -80,7 +111,7 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         }
 
         session.beginTransaction();
-        // ① Carga el managed entity dentro de la misma sesión
+        // Cargar entidad en estado managed
         Contacto managed = session.get(Contacto.class, contacto.getId());
         if (managed != null) {
             session.remove(managed);
@@ -92,7 +123,11 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         return true;
     }
 
-
+    /**
+     * Busca un contacto por su identificador único.
+     * @param id identificador del contacto
+     * devuelve objeto { Contacto} si se encuentra; null en otro caso
+     */
     @Override
     public Contacto findById(Integer id) {
         Session session = HibernateUtil.getSession();
@@ -101,9 +136,9 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
         return contacto;
     }
 
+    // Métodos del contrato Ejecutable
     @Override
     public void run() {
-
     }
 
     @Override
@@ -111,4 +146,3 @@ public class ContactoHiberImpl implements GenericSql<Contacto>, Ejecutable {
 
     }
 }
-

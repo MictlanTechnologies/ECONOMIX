@@ -1,30 +1,28 @@
+// Paquete principal donde se lanza la interfaz gráfica del sistema
 package org.economix.ventana.inicio;
 
+// Importaciones generales: tema visual, utilidades Hibernate y vistas Swing
 import com.formdev.flatlaf.FlatDarculaLaf;
 import org.economix.util.HibernateUtil;
-import org.economix.ventana.vista.Login;
-import org.economix.ventana.vista.Registro;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.economix.ventana.vista.PantallaInicio;
-
-import javax.swing.*;
+import org.hibernate.SessionFactory;
+import javax.swing.SwingUtilities;
 
 /**
- * Lanzador de la aplicación.
- * Comprueba si existe al menos un usuario; si no, fuerza el registro.
+ * Clase principal que inicia ECONOMIX con interfaz gráfica (Swing).
  */
 public class ECONOMIX {
+
+    /**
+     * Método main: aplica el tema visual, inicializa Hibernate
+     * y lanza la pantalla de bienvenida.
+     */
     public static void main(String[] args) {
-        FlatDarculaLaf.setup();
+        FlatDarculaLaf.setup(); // Aplica tema visual oscuro
+
         SwingUtilities.invokeLater(() -> {
-            SessionFactory sf = HibernateUtil.getSessionFactory();
-            new PantallaInicio(sf).setVisible(true);
+            SessionFactory sf = HibernateUtil.getSessionFactory(); // Obtiene la sesión Hibernate
+            new PantallaInicio(sf).setVisible(true);               // Muestra la ventana inicial
         });
     }
 }
-
-
-
-
-

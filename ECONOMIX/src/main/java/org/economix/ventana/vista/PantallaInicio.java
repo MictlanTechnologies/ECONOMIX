@@ -1,8 +1,8 @@
 package org.economix.ventana.vista;
 
+import org.economix.util.IconUtil;
 import org.economix.ventana.vista.Login;
 import org.economix.ventana.vista.Registro;
-import org.economix.util.IconUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -89,7 +89,7 @@ public class PantallaInicio extends JFrame {
 
     /** Establece un GIF como fondo de la pantalla. */
     public void setBackgroundGif(String path) {
-        background.setIcon(new ImageIcon(path));
+        background.setIcon(new ImageIcon("ECONOMIX_background.gif"));
     }
 
     /** Establece un video de fondo utilizando vlcj. */

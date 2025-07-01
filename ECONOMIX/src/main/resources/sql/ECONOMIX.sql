@@ -196,23 +196,29 @@ SHOW WARNINGS;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `economix`.`tbl_presupuesto` (
   `idPresupuesto` INT NOT NULL AUTO_INCREMENT,
-  `idUsuario` INT NOT NULL,
-  `categoria` VARCHAR(40) NOT NULL,
-  `montoMaximo` DECIMAL(12,2) NOT NULL,
-  `montoGastado` DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-  `mes` INT NOT NULL,
-  `anio` INT NOT NULL,
+  `idUsuario`     INT NOT NULL,
+  `categoria`     VARCHAR(40)  NOT NULL,
+  `montoMaximo`   DECIMAL(12,2) NOT NULL,
+  `montoGastado`  DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  `mes`           TINYINT UNSIGNED NOT NULL,   -- 1-12
+  `anio`          SMALLINT UNSIGNED NOT NULL,  -- 2025, etc.
   PRIMARY KEY (`idPresupuesto`),
-  CONSTRAINT `tbl_presupuesto_ibfk_1`
+  
+  -- Evita presupuestos duplicados para mismo usuario, mes, año y categoría
+  UNIQUE KEY `u_presup_usr_mes_anio_cat`
+    (`idUsuario`,`mes`,`anio`,`categoria`),
+  
+  -- Relación correcta con el usuario
+  CONSTRAINT `fk_presupuesto_usuario`
     FOREIGN KEY (`idUsuario`)
-    REFERENCES `economix`.`tbl_usuario` (`idUsuario`))
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
+DEFAULT CHARSET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
-
-SHOW WARNINGS;
-
-CREATE INDEX `idUsuario` ON `economix`.`tbl_presupuesto` (`idUsuario` ASC) VISIBLE;
+CREATE INDEX `idx_presupuesto_usuario` ON `economix`.`tbl_presupuesto` (`idUsuario`);
 
 SHOW WARNINGS;
 

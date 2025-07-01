@@ -1,3 +1,4 @@
+// Paquete que contiene las implementaciones Hibernate para entidades de gastos
 package org.economix.sql.hibernateimpl.gastos;
 
 import org.economix.util.HibernateUtil;
@@ -9,12 +10,24 @@ import org.hibernate.Session;
 
 import java.util.List;
 
+/**
+ * Implementación específica de {GenericSql} y {Ejecutable} para la entidad {conceptoGastos}.
+ * Esta clase encapsula las operaciones CRUD utilizando Hibernate para la entidad Concepto de Gastos.
+ *
+ * Sigue el patrón Singleton para garantizar una única instancia reutilizable.
+ */
 public class ConceptoGastosHiberImpl implements GenericSql<conceptoGastos>, Ejecutable {
+
+    /** Instancia única (Singleton) */
     private static ConceptoGastosHiberImpl conceptoGastosHiber;
 
-    private ConceptoGastosHiberImpl() {
-    }
+    /** Constructor privado para el patrón Singleton */
+    private ConceptoGastosHiberImpl() {}
 
+    /**
+     * Devuelve la instancia única de esta implementación.
+     * devuelve instancia única de ConceptoGastosHiberImpl
+     */
     public static ConceptoGastosHiberImpl getInstance() {
         if (conceptoGastosHiber == null) {
             conceptoGastosHiber = new ConceptoGastosHiberImpl();
@@ -22,44 +35,66 @@ public class ConceptoGastosHiberImpl implements GenericSql<conceptoGastos>, Ejec
         return conceptoGastosHiber;
     }
 
-
+    /**
+     * Recupera todos los conceptos de gasto de la base de datos,
+     * incluyendo los gastos asociados (uso de `join fetch` para evitar `LazyInitializationException`).
+     *
+     * devuelve lista de todos los {@link conceptoGastos} registrados.
+     */
     @Override
-    public List<conceptoGastos> findAll() {           // ← cambia Entidad por el tipo correcto
+    public List<conceptoGastos> findAll() {
         try (Session session = HibernateUtil.getSession()) {
             return session
                     .createQuery(
-                            "select g from conceptoGastos g join fetch g.gastos",  // 👈
+                            "select g from conceptoGastos g join fetch g.gastos",
                             conceptoGastos.class)
                     .getResultList();
         }
     }
 
+    /**
+     * Guarda un nuevo concepto de gasto vinculándolo a un gasto existente, usando su ID.
+     * @param conceptoGastos el concepto a guardar
+     * @param idGastos identificador del gasto al que se asociará el concepto
+     * devuelve true si la operación fue exitosa
+     */
     public boolean save(conceptoGastos conceptoGastos, Long idGastos) {
-
         try (Session session = HibernateUtil.getSession()) {
             session.beginTransaction();
-            // 1) Traer o referenciar el usuario
+
+            // Referencia al gasto sin hacer SELECT explícito
             Gastos gastos = session.getReference(Gastos.class, idGastos);
-            //    (getReference evita un SELECT; usa get() si necesitas validar existencia)
-            // 2) Vincular
+
+            // Vinculación del gasto
             conceptoGastos.setGastos(gastos);
-            // 3) Persistir
+
+            // Persistencia
             session.persist(conceptoGastos);
             session.getTransaction().commit();
             return true;
         }
     }
 
+    /**
+     * Guarda un nuevo concepto de gasto en la base de datos.
+     * @param conceptoGastos entidad a guardar
+     * devuelve true si la operación fue exitosa
+     */
     @Override
     public boolean save(conceptoGastos conceptoGastos) {
         Session session = HibernateUtil.getSession();
-        session.beginTransaction(); //Crea un conjunto de instrucciones
+        session.beginTransaction();
         session.persist(conceptoGastos);
-        session.getTransaction().commit(); //Crea un commit de todo el conjunto de instrucciones
+        session.getTransaction().commit();
         session.close();
         return true;
     }
 
+    /**
+     * Actualiza un concepto de gasto existente.
+     * @param conceptoGastos entidad con datos modificados
+     * devuelve true si la operación fue exitosa
+     */
     @Override
     public boolean update(conceptoGastos conceptoGastos) {
         Session session = HibernateUtil.getSession();
@@ -70,16 +105,22 @@ public class ConceptoGastosHiberImpl implements GenericSql<conceptoGastos>, Ejec
         return true;
     }
 
+    /**
+     * Elimina un concepto de gasto de la base de datos.
+     * Se asegura de que la entidad esté gestionada antes de eliminar.
+     * @param conceptoGastos entidad a eliminar
+     * devuelve true si la operación fue exitosa
+     */
     @Override
     public boolean delete(conceptoGastos conceptoGastos) {
         Session session = HibernateUtil.getSession();
         if (session == null) {
-            System.out.println("ERROR DE CONEXION");
+            System.out.println("ERROR DE CONEXIÓN");
             return false;
         }
 
         session.beginTransaction();
-        // ① Carga el managed entity dentro de la misma sesión
+        // Se asegura de que la entidad esté en contexto
         conceptoGastos managed = session.get(conceptoGastos.class, conceptoGastos.getId());
         if (managed != null) {
             session.remove(managed);
@@ -91,7 +132,11 @@ public class ConceptoGastosHiberImpl implements GenericSql<conceptoGastos>, Ejec
         return true;
     }
 
-
+    /**
+     * Busca un concepto de gasto por su ID.
+     * @param id identificador del concepto
+     * devuelve la entidad encontrada o null si no existe
+     */
     @Override
     public conceptoGastos findById(Integer id) {
         Session session = HibernateUtil.getSession();
@@ -100,13 +145,15 @@ public class ConceptoGastosHiberImpl implements GenericSql<conceptoGastos>, Ejec
         return conceptoGastos;
     }
 
+    // Métodos del contrato Ejecutable (aún no implementados)
+
     @Override
     public void run() {
-
+        // Método aún no implementado
     }
 
     @Override
     public void setFlag(boolean flag) {
-
+        // Método aún no implementado
     }
 }

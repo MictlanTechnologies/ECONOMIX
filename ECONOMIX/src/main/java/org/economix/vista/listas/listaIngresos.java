@@ -1,3 +1,4 @@
+// Paquete que contiene los menús del sistema relacionados a ingresos
 package org.economix.vista.listas;
 
 import org.economix.vista.acciones.Ejecutable;
@@ -6,74 +7,91 @@ import org.economix.vista.acciones.leerAcciones;
 import org.economix.model.catalogos.ingresos.ingresosCatalogo;
 import org.economix.model.catalogos.ingresos.conceptoIngresosCatalogo;
 
-public class listaIngresos extends leerAcciones
-{
-    private static org.economix.vista.listas.listaIngresos listaIngresos;
+/**
+ * Submenú del sistema para gestionar catálogos relacionados a ingresos.
+ * Permite acceder a ingresos registrados, conceptos de ingreso, y presupuesto (futuro).
+ * Utiliza el patrón Singleton para garantizar una sola instancia.
+ */
+public class listaIngresos extends leerAcciones {
 
-    private listaIngresos()
-    {
-    }
+    /** Instancia única del menú de ingresos (Singleton) */
+    private static listaIngresos listaIngresos;
 
-    public static org.economix.vista.listas.listaIngresos getInstance()
-    {
-        if(listaIngresos==null)
-        {
+    /** Constructor privado para el patrón Singleton */
+    private listaIngresos() {}
+
+    /**
+     * Devuelve la instancia única de listaIngresos.
+     * devuelve instancia de listaIngresos
+     */
+    public static listaIngresos getInstance() {
+        if (listaIngresos == null) {
             listaIngresos = new listaIngresos();
         }
         return listaIngresos;
     }
 
+    /**
+     * Muestra las opciones disponibles en el submenú de ingresos.
+     */
     @Override
-    public void despliegaMenu()
-    {
+    public void despliegaMenu() {
         System.out.println("\n\t::: Catálogo de Usuario :::");
-        System.out.println( "1.- Ingresos");
-        System.out.println( "2.- Concepto Ingresos");
-        System.out.println( "3.- Presupuesto");
-        System.out.println( "4.- Salir " );
+        System.out.println("1.- Ingresos");
+        System.out.println("2.- Concepto Ingresos");
+        System.out.println("3.- Presupuesto");
+        System.out.println("4.- Salir ");
         Menu.seleccionaOpcion();
     }
 
+    /**
+     * Valor mínimo permitido para la opción seleccionada.
+     * devuelve 1
+     */
     @Override
-    public int valorMinMenu()
-    {
+    public int valorMinMenu() {
         return 1;
     }
 
+    /**
+     * Valor máximo permitido para la opción seleccionada.
+     * devuelve 4
+     */
     @Override
-    public int valorMaxMenu()
-    {
+    public int valorMaxMenu() {
         return 4;
     }
 
+    /**
+     * Ejecuta la opción seleccionada por el usuario.
+     */
     @Override
-    public void procesaOpcion()
-    {
+    public void procesaOpcion() {
         Ejecutable ejecutable = null;
-        switch (opcion)
-        {
+
+        switch (opcion) {
             case 1:
-                ejecutable = ingresosCatalogo.getInstance();
+                ejecutable = ingresosCatalogo.getInstance();              // Gestión de ingresos
                 break;
             case 2:
-                ejecutable = conceptoIngresosCatalogo.getInstance();
+                ejecutable = conceptoIngresosCatalogo.getInstance();      // Gestión de conceptos de ingreso
                 break;
             case 3:
-                flag=false;
+                // Opción aún no implementada (presupuestos)
+                System.out.println("> Módulo de presupuesto no implementado.");
                 break;
             case 4:
-                flag=false;
+                flag = false; // Salir del menú
                 break;
             default:
-                Menu.opcionInvalida();
+                Menu.opcionInvalida(); // Opción inválida
                 break;
         }
-        if(ejecutable!=null)
-        {
-            ejecutable.setFlag( true );
-            ejecutable.run( );
+
+        // Si se seleccionó una opción válida con lógica definida, ejecutarla
+        if (ejecutable != null) {
+            ejecutable.setFlag(true);
+            ejecutable.run();
         }
     }
 }
-
-

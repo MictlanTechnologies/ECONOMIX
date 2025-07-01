@@ -1,28 +1,39 @@
+// Paquete que contiene la lógica de selección de interfaz
 package org.economix.vista.acciones;
 
 import org.economix.vista.consola.Consola;
 
-public class seleccionEjecutable extends leerAcciones
-{
-    public static org.economix.vista.acciones.seleccionEjecutable seleccionEjecutable;
+/**
+ * Clase encargada de mostrar el menú inicial para elegir
+ * el tipo de interfaz (consola o ventana) en ECONOMIX.
+ * Implementa el patrón Singleton.
+ */
+public class seleccionEjecutable extends leerAcciones {
 
-    private seleccionEjecutable()
-    {
+    // Instancia única (singleton)
+    public static seleccionEjecutable seleccionEjecutable;
+
+    /** Constructor privado para evitar instancias múltiples */
+    private seleccionEjecutable() {
     }
 
-    public static org.economix.vista.acciones.seleccionEjecutable getInstance()
-    {
-        if(seleccionEjecutable==null)
-        {
+    /**
+     * Devuelve la instancia única del selector de ejecución.
+     * devuelve instancia de seleccionEjecutable
+     */
+    public static seleccionEjecutable getInstance() {
+        if (seleccionEjecutable == null) {
             seleccionEjecutable = new seleccionEjecutable();
         }
         return seleccionEjecutable;
     }
 
+    /**
+     * Muestra el menú principal para elegir entre consola o ventana.
+     */
     @Override
-    public void despliegaMenu()
-    {
-        System.out.println("\n\t:::¡Bienvenido a ECONOMIX! :::");
+    public void despliegaMenu() {
+        System.out.println("\n\t::: ¡Bienvenido a ECONOMIX! :::");
         System.out.println("\t> Selecciona tu método de acceso:");
         System.out.println("1. Consola");
         System.out.println("2. Ventana");
@@ -30,31 +41,42 @@ public class seleccionEjecutable extends leerAcciones
         Menu.seleccionaOpcion();
     }
 
+    /**
+     * Límite inferior del menú.
+     * devuelve 1
+     */
     @Override
-    public int valorMinMenu()
-    {
+    public int valorMinMenu() {
         return 1;
     }
+
+    /**
+     * Límite superior del menú.
+     * devuelve 3
+     */
     @Override
-    public int valorMaxMenu()
-    {
+    public int valorMaxMenu() {
         return 3;
     }
 
+    /**
+     * Procesa la opción seleccionada por el usuario.
+     */
     @Override
-    public void procesaOpcion()
-    {
+    public void procesaOpcion() {
         Ejecutable ejecutable = null;
-        if(opcion==1)
-        {
-            ejecutable = Consola.getInstance();
+
+        if (opcion == 1) {
+            ejecutable = Consola.getInstance();  // Lanza la versión por consola
         }
-        if(opcion==2)
-        {
-            ejecutable = null;
+
+        if (opcion == 2) {
+            ejecutable = null; // Aquí se conectaría la interfaz de ventana
         }
-        ejecutable.setFlag( true );
-        ejecutable.run();
+
+        if (ejecutable != null) {
+            ejecutable.setFlag(true);
+            ejecutable.run();
+        }
     }
 }
-

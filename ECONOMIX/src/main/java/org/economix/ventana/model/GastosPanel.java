@@ -20,24 +20,34 @@ import java.util.List;
 
 /**
  * Panel CRUD de Gastos reutilizando GestorCatalogosSwing.
+ * Permite registrar, consultar, modificar y eliminar gastos personales asociados a un usuario,
+ * incluyendo opción de reutilizar gastos recurrentes y advertencia por sobrepaso de presupuesto.
  */
 public class GastosPanel extends GestorCatalogosSwing<Gastos> {
 
-    // Campos del formulario
+    // ===== Campos de entrada para datos del gasto =====
     private final JTextField articuloTxt = new JTextField(15);
     private final JTextField descripcionTxt = new JTextField(15);
     private final JTextField montoTxt = new JTextField(10);
     private final JTextField fechaTxt = new JTextField(10); // yyyy-MM-dd
     private final JTextField periodoTxt = new JTextField(12);
 
+    // Checkbox para indicar si el gasto será registrado como recurrente
     private final JCheckBox recurrenteChk = new JCheckBox("Gasto recurrente");
+
+    // Lista lateral de conceptos recurrentes reutilizables
     private final DefaultListModel<GastoRec> recurrentesModelo = new DefaultListModel<>();
     private final JList<GastoRec> recurrentesLista = new JList<>(recurrentesModelo);
+
+    // Permite ejecutar una acción extra tras guardar o eliminar
     private Runnable cambioListener;
 
     /** Permite registrar un callback que se ejecuta tras guardar o eliminar. */
     public void setCambioListener(Runnable r) { this.cambioListener = r; }
 
+    /**
+     * Representa visualmente un gasto recurrente guardado, con nombre, descripción, monto y periodo.
+     */
     private record GastoRec(String articulo, String descripcion,
                             BigDecimal monto, String periodo) {
         @Override public String toString() {
@@ -49,6 +59,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         super(sf, usuario,
                 new String[]{"Artículo", "Descripción", "Monto", "Fecha", "Periodo"});
 
+        // Configuración de doble clic sobre elementos recurrentes
         recurrentesLista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recurrentesLista.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
@@ -64,14 +75,13 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
                 }
             }
         });
+
+        // Añade el formulario al panel principal
         add(construirFormulario(), BorderLayout.EAST);
         cargarTabla();
         cargarConceptosRecurrentes();
         if (cambioListener != null) cambioListener.run();
-}
-    /* =====================================================
-     *          Implementación de métodos abstractos
-     * ===================================================== */
+    }
 
     @Override
     protected Class<Gastos> getEntityClass() {
@@ -155,6 +165,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
             s.persist(g);
             saved[0] = g;
 
+            // Si es recurrente, también se guarda como concepto reutilizable
             if (recurrenteChk.isSelected()) {
                 var cg = new org.economix.model.gastos.conceptoGastos();
                 cg.setNombreConcepto(art);
@@ -215,6 +226,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
     /**
      * Carga de la base de datos los gastos marcados como recurrentes
      * por el usuario y los muestra en la lista lateral.
+     * Sirve como acceso rápido para volver a registrar gastos frecuentes.
      */
     private void cargarConceptosRecurrentes(){
         recurrentesModelo.clear();
@@ -236,7 +248,8 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
     }
 
     /**
-     * Actualiza el presupuesto asociado al gasto y muestra alerta si supera el 80%.
+     * Actualiza el presupuesto asociado al gasto registrado y verifica si ya se ha consumido
+     * más del 80% del monto máximo del presupuesto. En ese caso, muestra una alerta visual al usuario.
      */
     private void registrarGasto(Gastos g) {
         var ph  = PresupuestoHiberImpl.get();
@@ -262,10 +275,13 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
             }
         }
     }
-    /* =====================================================
-     *                    UI auxiliar
-     * ===================================================== */
 
+    /**
+     * Construye el panel de formulario para introducir los datos del gasto.
+     * Se organiza en filas con etiquetas y campos de texto, usando GridBagLayout.
+     * También incluye los botones de acción principales (Guardar, Eliminar, Limpiar, Ayuda).
+     * @return JPanel ensamblado con el formulario completo.
+     */
     private JPanel construirFormulario() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
@@ -275,35 +291,48 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         gc.weightx = 1;
         int y = 0;
 
+        // Línea 1: Artículo
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Artículo:"), gc);
         gc.gridx = 1; p.add(articuloTxt, gc); y++;
 
+        // Línea 2: Descripción
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Descripción:"), gc);
         gc.gridx = 1; p.add(descripcionTxt, gc); y++;
 
+        // Línea 3: Monto
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Monto:"), gc);
         gc.gridx = 1; p.add(montoTxt, gc); y++;
 
+        // Línea 4: Fecha
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Fecha (yyyy-MM-dd):"), gc);
         gc.gridx = 1; p.add(fechaTxt, gc); y++;
 
+        // Línea 5: Periodo
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Periodo:"), gc);
         gc.gridx = 1; p.add(periodoTxt, gc); y++;
 
+        // Línea 6: Checkbox gasto recurrente
         gc.gridx = 0; gc.gridy = y; p.add(recurrenteChk, gc); gc.gridwidth = 2; y++;
+
+        // Línea 7: Etiqueta gastos recurrentes
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Gastos recurrentes:"), gc); y++;
+
+        // Línea 8: Lista de gastos recurrentes
         gc.gridx = 0; gc.gridy = y; p.add(new JScrollPane(recurrentesLista), gc); y++;
         gc.gridwidth = 1;
 
+        // Línea 9: Botonera inferior
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton guardarBtn = new JButton("Guardar");
         JButton eliminarBtn = new JButton("Eliminar");
         JButton limpiarBtn  = new JButton("Limpiar");
         JButton ayudaBtn    = new JButton("Ayuda");
 
+        // Asignación de acciones a botones
         guardarBtn.addActionListener(e -> guardar());
         eliminarBtn.addActionListener(e -> eliminar());
         limpiarBtn.addActionListener(e -> limpiarCampos());
+        ayudaBtn.addActionListener(e -> mostrarInfo());
 
         botones.add(guardarBtn);
         botones.add(eliminarBtn);
@@ -313,12 +342,13 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         gc.gridx = 0; gc.gridy = y; gc.gridwidth = 2; gc.anchor = GridBagConstraints.CENTER;
         p.add(botones, gc);
 
-        ayudaBtn.addActionListener(e -> mostrarInfo());
-
         return p;
     }
 
-    /** Describe brevemente cómo registrar y administrar gastos. */
+    /**
+     * Muestra una ventana emergente con una breve explicación del uso del panel.
+     * Es útil para usuarios nuevos que necesitan una guía rápida.
+     */
     private void mostrarInfo() {
         JOptionPane.showMessageDialog(this,
                 "Use este formulario para registrar sus gastos.\n" +

@@ -7,7 +7,6 @@ import org.economix.ventana.model.usuario.UsuarioPanel;
 import org.economix.ventana.model.GraficasPanel;
 import org.economix.ventana.model.PresupuestoPanel;
 import org.hibernate.SessionFactory;
-import org.economix.util.IconUtil;
 import java.awt.*;
 import javax.swing.*;
 
@@ -103,7 +102,7 @@ public class PrincipalVentana extends JFrame {
     private void mostrarInfo() {
         JOptionPane.showMessageDialog(
                 this,
-                "Usa la barra superior para acceder a Gastos, Ingresos, Presupuestos, Gráficas  y Usuario.",
+                "Usa la barra superior para acceder a Gastos, Ingresos, Presupuestos, Gráficas y Usuario.",
                 "Ayuda",
                 JOptionPane.INFORMATION_MESSAGE
         );

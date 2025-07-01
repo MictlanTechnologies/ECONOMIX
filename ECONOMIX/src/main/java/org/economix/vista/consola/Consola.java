@@ -1,3 +1,4 @@
+// Paquete que contiene la ejecución principal en modo consola
 package org.economix.vista.consola;
 
 import org.economix.vista.acciones.Ejecutable;
@@ -5,26 +6,36 @@ import org.economix.vista.acciones.Menu;
 import org.economix.vista.acciones.leerAcciones;
 import org.economix.vista.listas.listaCatalogos;
 
-public class Consola extends leerAcciones
-{
+/**
+ * Clase que representa el menú principal en modo consola para ECONOMIX.
+ * Permite al usuario acceder a los submenús disponibles.
+ * Implementa patrón Singleton.
+ */
+public class Consola extends leerAcciones {
+
+    // Instancia única del menú consola
     private static Consola consola;
 
-    private Consola()
-    {
+    /** Constructor privado para patrón Singleton */
+    private Consola() {
     }
 
-    public static Consola getInstance( )
-    {
-        if(consola==null)
-        {
+    /**
+     * Devuelve la única instancia de Consola (Singleton).
+     * devuelve instancia de Consola
+     */
+    public static Consola getInstance() {
+        if (consola == null) {
             consola = new Consola();
         }
         return consola;
     }
 
+    /**
+     * Muestra las opciones disponibles del menú principal en consola.
+     */
     @Override
-    public void despliegaMenu()
-    {
+    public void despliegaMenu() {
         System.out.println("\n\t::: Menú principal :::");
         System.out.println("\t> Selecciona una opción:");
         System.out.println("1. Menu Economix");
@@ -33,31 +44,41 @@ public class Consola extends leerAcciones
         Menu.seleccionaOpcion();
     }
 
+    /**
+     * Límite inferior de opciones permitidas.
+     * devuelve 1
+     */
     @Override
-    public int valorMinMenu()
-    {
+    public int valorMinMenu() {
         return 1;
     }
+
+    /**
+     * Límite superior de opciones permitidas.
+     * devuelve 3
+     */
     @Override
-    public int valorMaxMenu()
-    {
+    public int valorMaxMenu() {
         return 3;
     }
 
+    /**
+     * Ejecuta la acción correspondiente a la opción seleccionada.
+     */
     @Override
-    public void procesaOpcion()
-    {
+    public void procesaOpcion() {
         Ejecutable ejecutable = null;
-        if(opcion==1)
-        {
+
+        if (opcion == 1) {
+            // Ejecuta el menú de catálogos ECONOMIX (gastos, ingresos, etc.)
             ejecutable = listaCatalogos.getInstance();
-            ejecutable.setFlag( true );
-            ejecutable.run( );
+            ejecutable.setFlag(true);
+            ejecutable.run();
         }
-        if(opcion==2)
-        {
+
+        if (opcion == 2) {
+            // Placeholder: aún no implementada la interfaz gráfica desde consola
             System.out.println("> No implementado.");
         }
     }
 }
-
