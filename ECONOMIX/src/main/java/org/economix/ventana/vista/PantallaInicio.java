@@ -2,6 +2,7 @@ package org.economix.ventana.vista;
 
 import org.economix.ventana.vista.Login;
 import org.economix.ventana.vista.Registro;
+import org.economix.util.IconUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -22,6 +23,8 @@ public class PantallaInicio extends JFrame {
     public PantallaInicio(SessionFactory sf) {
         super("ECONOMIX");
         this.sf = sf;
+        setIconImage(IconUtil.getAppImage());
+        // Mostrar el logo por defecto en el fondo y en la etiqueta
         construirUI();
     }
 
@@ -86,7 +89,7 @@ public class PantallaInicio extends JFrame {
 
     /** Establece un GIF como fondo de la pantalla. */
     public void setBackgroundGif(String path) {
-        background.setIcon(new ImageIcon(""));
+        background.setIcon(new ImageIcon(path));
     }
 
     /** Establece un video de fondo utilizando vlcj. */
@@ -96,7 +99,7 @@ public class PantallaInicio extends JFrame {
         }
         mediaPlayer = new EmbeddedMediaPlayerComponent();
         background.add(mediaPlayer, BorderLayout.CENTER);
-        mediaPlayer.mediaPlayer().media().play("");
+        mediaPlayer.mediaPlayer().media().play(path);
     }
 
     /** Espacio para definir la imagen del logo. */

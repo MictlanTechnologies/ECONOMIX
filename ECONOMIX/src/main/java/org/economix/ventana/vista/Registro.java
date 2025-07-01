@@ -4,6 +4,7 @@ import org.economix.model.usuario.Usuario;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.economix.util.IconUtil;
 
 import javax.swing.*;
 import java.awt.*;

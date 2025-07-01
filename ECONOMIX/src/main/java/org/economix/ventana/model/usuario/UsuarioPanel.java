@@ -11,6 +11,7 @@ import org.hibernate.SessionFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import org.economix.util.IconUtil;
 import java.util.List;
 
 public class UsuarioPanel extends GestorCatalogosSwing<Usuario> {
