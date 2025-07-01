@@ -1,6 +1,7 @@
 package org.economix.ventana.vista;
 
 import org.economix.model.usuario.Usuario;
+import org.economix.util.IconUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -22,6 +23,7 @@ public class Login extends JDialog {
     public Login(Frame owner, SessionFactory sf) {
         super(owner, "Inicio de Sesión", true);
         this.sf = sf;
+        setIconImage(IconUtil.getAppImage());
         construirUI();
     }
 

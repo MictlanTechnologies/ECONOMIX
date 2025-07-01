@@ -45,6 +45,12 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
     private int ultimoPctCategoria = -1;
     private int ultimoPctTotal     = -1;
 
+    // Permite notificar a otros paneles después de guardar o eliminar
+    private Runnable cambioListener;
+
+    /** Registra un callback para ejecutar tras modificaciones */
+    public void setCambioListener(Runnable r) { this.cambioListener = r; }
+
     /**
      * Constructor principal que inicializa el panel de presupuesto.
      * Se configura el layout, se cargan datos y se construye la UI.
@@ -165,6 +171,7 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         actualizarBarraTotal();
         limpiarCampos();
         cargarTabla();
+        if (cambioListener != null) cambioListener.run();
     }
 
     /**
@@ -179,6 +186,7 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         });
         limpiarCampos();
         cargarTabla();
+        if (cambioListener != null) cambioListener.run();
     }
 
     /**
@@ -268,7 +276,6 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         barra.setForeground(
                 pct < 70 ? Color.GREEN :
                         pct < 90 ? Color.ORANGE : Color.RED);
-        mostrarAdvertencia(pct, false);
     }
 
     // Evita registrar múltiples listeners en cada recarga
@@ -336,7 +343,6 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         barra.setForeground(
                 pct < 70 ? Color.GREEN :
                         pct < 90 ? Color.ORANGE : Color.RED);
-        mostrarAdvertencia(pct, false);
     }
 
     /**
@@ -366,25 +372,5 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         barraTotal.setForeground(
                 pct < 70 ? Color.GREEN :
                         pct < 90 ? Color.ORANGE : Color.RED);
-        mostrarAdvertencia(pct, true);
-    }
-
-    /**
-     * Muestra alertas visuales si el porcentaje se acerca o excede el límite definido.
-     */
-    private void mostrarAdvertencia(int pct, boolean total) {
-        int last = total ? ultimoPctTotal : ultimoPctCategoria;
-        if (pct >= 100 && last < 100) {
-            JOptionPane.showMessageDialog(this,
-                    total ? "Has gastado más de lo que ingresas" :
-                            "Se excedió el presupuesto de la categoría",
-                    "Límite superado", JOptionPane.WARNING_MESSAGE);
-        } else if (pct >= 90 && last < 90) {
-            JOptionPane.showMessageDialog(this,
-                    total ? "Cuidado: tus gastos casi igualan a tus ingresos" :
-                            "Cuidado: estás por alcanzar el límite de esta categoría",
-                    "Aviso", JOptionPane.INFORMATION_MESSAGE);
-        }
-        if (total) ultimoPctTotal = pct; else ultimoPctCategoria = pct;
     }
 }

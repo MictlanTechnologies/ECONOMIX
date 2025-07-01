@@ -1,6 +1,7 @@
 package org.economix.ventana.vista;
 
 import org.economix.model.usuario.Usuario;
+import org.economix.util.IconUtil;
 import org.economix.ventana.model.GastosPanel;
 import org.economix.ventana.model.IngresosPanel;
 import org.economix.ventana.model.usuario.UsuarioPanel;
@@ -26,6 +27,7 @@ public class PrincipalVentana extends JFrame {
     public PrincipalVentana(SessionFactory sf, Usuario usuarioActual) {
         super("ECONOMIX – Bienvenido " + usuarioActual.getPerfilUsuario());
         this.sf = sf;
+        setIconImage(IconUtil.getAppImage());
         this.usuarioActual = usuarioActual;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(900, 600);
@@ -75,6 +77,7 @@ public class PrincipalVentana extends JFrame {
         };
         gastosPanel.setCambioListener(refrescar);
         ingresosPanel.setCambioListener(refrescar);
+        presupuestoPanel.setCambioListener(refrescar);
 
         /* ---------- Eventos ---------- */
         gastosBtn.addActionListener(e -> {

@@ -1,6 +1,7 @@
 package org.economix.ventana.vista;
 
 import org.economix.model.usuario.Usuario;
+import org.economix.util.IconUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -19,6 +20,7 @@ public class Registro extends JDialog {
     public Registro(Frame owner, SessionFactory sf) {
         super(owner, "Registro de usuario", true);
         this.sf = sf;
+        setIconImage(IconUtil.getAppImage());
         construirUI();
     }
 
