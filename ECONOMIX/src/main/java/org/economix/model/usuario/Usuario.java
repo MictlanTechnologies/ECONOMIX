@@ -1,7 +1,12 @@
 // Paquete que contiene las entidades relacionadas con los usuarios del sistema.
 package org.economix.model.usuario;
 
-// Importación de JPA y Lombok para persistencia y generación de código.
+/**
+ * Entidad que representa un usuario del sistema ECONOMIX.
+ * Contiene credenciales y relaciones con personas y gastos asociados.
+ * Hereda el campo `id` de {@link Catalogo}, que se mapea como `idUsuario`.
+ */
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.economix.model.gastos.Gastos;

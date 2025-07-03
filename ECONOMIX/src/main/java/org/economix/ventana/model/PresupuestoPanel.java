@@ -195,7 +195,7 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
     @Override
     public void limpiarCampos() {
         categoriaTxt.setText("");
-        limiteSld.setValue(0);
+        limiteSld.setValue(1);
         limiteValLbl.setText("0   ");
         idSeleccionado = null;
         barra.setValue(0);
