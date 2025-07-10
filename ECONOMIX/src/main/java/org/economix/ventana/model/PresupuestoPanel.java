@@ -131,12 +131,24 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
     public void guardar() {
         String cat = categoriaTxt.getText().trim();
         Gastos gastoSel = (Gastos) gastoCmb.getSelectedItem();
-        if (cat.isEmpty() || gastoSel == null) {
-            JOptionPane.showMessageDialog(this, "Categoría y gasto requeridos", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
+        Ingresos ingresoSel = (Ingresos) ingresoCmb.getSelectedItem();
+        if (cat.isEmpty() || gastoSel == null || ingresoSel == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Categoría, ingreso y gasto son requeridos",
+                    "Datos incompletos",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
         BigDecimal usado = gastoSel.getMontoGastos();
+
+        if (max.compareTo(BigDecimal.ZERO) <= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "El límite debe ser mayor que cero",
+                    "Valor inválido",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         // Validación: el gasto no puede superar el límite
         if (usado.compareTo(max) > 0) {
@@ -170,7 +182,7 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         if (saved[0] != null) actualizarBarra(saved[0]);
         actualizarBarraTotal();
         limpiarCampos();
-        cargarTabla();
+        actualizar();
         if (cambioListener != null) cambioListener.run();
     }
 
@@ -185,7 +197,7 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
             if (p != null) s.remove(p);
         });
         limpiarCampos();
-        cargarTabla();
+        actualizar();
         if (cambioListener != null) cambioListener.run();
     }
 
@@ -335,6 +347,15 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
             return;
         }
         BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
+        if (max.compareTo(BigDecimal.ZERO) <= 0) {
+            barra.setValue(0);
+            barra.setString("0% usado");
+            JOptionPane.showMessageDialog(this,
+                    "El límite debe ser mayor que cero",
+                    "Valor inválido",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         BigDecimal usado = g.getMontoGastos();
         int pct = usado.divide(max, 2, RoundingMode.HALF_UP)
                 .movePointRight(2).intValue();

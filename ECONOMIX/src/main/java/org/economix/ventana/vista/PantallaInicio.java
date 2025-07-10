@@ -8,6 +8,8 @@ import org.hibernate.SessionFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
+
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 /**
@@ -40,15 +42,17 @@ public class PantallaInicio extends JFrame {
         gc.gridy = 0;
         gc.anchor = GridBagConstraints.CENTER;
 
-        JLabel titulo = new JLabel("ECONOMIX");
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 48));
-        titulo.setForeground(Color.WHITE);
-        background.add(titulo, gc);
+        ImageIcon logo = new ImageIcon(
+                Objects.requireNonNull(PantallaInicio.class.getResource("/archivosGraficos/ECONOMIXL_LOGO.png")));
+        // Aumentar tamaño del logo para que se aprecie mejor en la pantalla
+        Image scaled = logo.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        logoLabel.setIcon(new ImageIcon(scaled));
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         gc.gridy++;
         JLabel subtitulo = new JLabel("Mictlan Technologies");
         subtitulo.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        subtitulo.setForeground(Color.WHITE);
+        subtitulo.setForeground(Color.LIGHT_GRAY);
         background.add(subtitulo, gc);
 
         gc.gridy++;

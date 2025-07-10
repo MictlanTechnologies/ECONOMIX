@@ -5,7 +5,7 @@ import java.awt.*;
 
 public final class IconUtil {
     private static ImageIcon appIcon;
-    private static final String ICON_PATH = "/archivosGraficos/ECONOMIXL_LOGO.png";
+    private static final String ICON_PATH = "/archivosGraficos/ECONOMIX_LOGO.png";
 
     public static ImageIcon getAppIcon() {
         if (appIcon == null) {

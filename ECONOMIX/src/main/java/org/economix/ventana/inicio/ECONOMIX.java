@@ -3,6 +3,8 @@ package org.economix.ventana.inicio;
 
 // Importaciones generales: tema visual, utilidades Hibernate y vistas Swing
 import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import org.economix.util.HibernateUtil;
 import org.economix.ventana.vista.PantallaInicio;
 import org.hibernate.SessionFactory;
@@ -18,7 +20,7 @@ public class ECONOMIX {
      * y lanza la pantalla de bienvenida.
      */
     public static void main(String[] args) {
-        FlatDarculaLaf.setup(); // Aplica tema visual oscuro
+        FlatMacDarkLaf.setup();
 
         SwingUtilities.invokeLater(() -> {
             SessionFactory sf = HibernateUtil.getSessionFactory(); // Obtiene la sesión Hibernate

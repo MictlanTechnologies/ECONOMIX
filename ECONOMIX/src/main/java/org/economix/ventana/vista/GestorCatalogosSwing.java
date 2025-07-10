@@ -24,7 +24,7 @@ public abstract class GestorCatalogosSwing<T> extends JPanel implements GenericS
      *                   Atributos base
      * ===================================================== */
     protected final SessionFactory sf;
-    protected final Usuario        usuario;
+    protected final Usuario         usuario;
     protected final DefaultTableModel modelo;
     protected final JTable         tabla;
 
