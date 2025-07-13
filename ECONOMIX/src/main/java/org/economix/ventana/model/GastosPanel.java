@@ -1,5 +1,7 @@
 package org.economix.ventana.model;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.optionalusertools.CalendarBorderProperties;
 import org.economix.model.gastos.Gastos;
 import org.economix.model.usuario.Usuario;
 import org.economix.ventana.vista.GestorCatalogosSwing;
@@ -7,6 +9,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.economix.sql.hibernateimpl.presupuesto.PresupuestoHiberImpl;
 import org.economix.model.presupuesto.Presupuesto;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import java.awt.Color;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +20,7 @@ import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +34,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
     private final JTextField articuloTxt = new JTextField(15);
     private final JTextField descripcionTxt = new JTextField(15);
     private final JTextField montoTxt = new JTextField(10);
-    private final JTextField fechaTxt = new JTextField(10); // yyyy-MM-dd
+    private final DatePicker fechaPicker = createDarkDatePicker();// yyyy-MM-dd
     private final JTextField periodoTxt = new JTextField(12);
 
     // Checkbox para indicar si el gasto será registrado como recurrente
@@ -70,7 +75,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
                         descripcionTxt.setText(info.descripcion());
                         montoTxt.setText(info.monto().toPlainString());
                         periodoTxt.setText(info.periodo());
-                        fechaTxt.requestFocus();
+                        fechaPicker.requestFocus();
                     }
                 }
             }
@@ -118,7 +123,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         articuloTxt.setText   (g.getArticuloGasto());
         descripcionTxt.setText(g.getDescripcionGastos());
         montoTxt.setText      (g.getMontoGastos().toPlainString());
-        fechaTxt.setText      (g.getFechaGastos().toString());
+        fechaPicker.setDate   (g.getFechaGastos().toLocalDate());
         periodoTxt.setText    (g.getPeriodoGastos());
     }
 
@@ -127,10 +132,10 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         String art = articuloTxt.getText().trim();
         String desc = descripcionTxt.getText().trim();
         String mon = montoTxt.getText().trim();
-        String fec = fechaTxt.getText().trim();
+        LocalDate fec = fechaPicker.getDate();
         String per = periodoTxt.getText().trim();
 
-        if (art.isEmpty() || mon.isEmpty() || fec.isEmpty()) {
+        if (art.isEmpty() || mon.isEmpty() || fec == null) {
             JOptionPane.showMessageDialog(this,
                     "Artículo, monto y fecha son obligatorios",
                     "Datos incompletos", JOptionPane.WARNING_MESSAGE);
@@ -140,7 +145,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         Date fecha;
         try {
             monto = new BigDecimal(mon);
-            fecha = Date.valueOf(LocalDate.parse(fec));
+            fecha = Date.valueOf(fec);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Monto o fecha con formato inválido",
@@ -217,7 +222,7 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         articuloTxt.setText("");
         descripcionTxt.setText("");
         montoTxt.setText("");
-        fechaTxt.setText("");
+        fechaPicker.clear();
         periodoTxt.setText("");
         recurrenteChk.setSelected(false);
         idSeleccionado = null;
@@ -304,8 +309,8 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         gc.gridx = 1; p.add(montoTxt, gc); y++;
 
         // Línea 4: Fecha
-        gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Fecha (yyyy-MM-dd):"), gc);
-        gc.gridx = 1; p.add(fechaTxt, gc); y++;
+        gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Fecha:"), gc);
+        gc.gridx = 1; p.add(fechaPicker, gc); y++;
 
         // Línea 5: Periodo
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Periodo:"), gc);
@@ -343,6 +348,82 @@ public class GastosPanel extends GestorCatalogosSwing<Gastos> {
         p.add(botones, gc);
 
         return p;
+    }
+
+    /** Crea un selector de fecha en modo oscuro con formato yyyy-MM-dd. */
+    private static DatePicker createDarkDatePicker() {
+        /* ===== 1. Paleta (mismos tonos que tu GUI) ====================== */
+        Color bgBase   = new Color(0x2E2E2C);   // fondo principal (casi negro)
+        Color bgDark   = bgBase.darker();       // un poco más oscuro
+        Color accent   = new Color(0xB6AC94);   // resaltados y bordes
+        Color txtLight = new Color(0xF3F1E4);   // texto muy claro
+        Color txtMid   = new Color(0xD5D0C3);   // texto secundario
+
+        /* ===== 2. Configuración general del DatePicker ================== */
+        DatePickerSettings s = new DatePickerSettings();
+        s.setAllowKeyboardEditing(false);
+        s.setAllowEmptyDates(true);             // importante para que «Borrar» pueda activarse
+        s.setFormatForDatesCommonEra("yyyy-MM-dd");
+        s.setFormatForDatesBeforeCommonEra("yyyy-MM-dd");
+
+        /* ===== 3. Colores de FONDO ====================================== */
+        s.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel,      Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels,    Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearNavigationButtons, Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel,                Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundClearLabel,                Color.BLACK);          // botón Borrar
+        s.setColor(DatePickerSettings.DateArea.CalendarBackgroundNormalDates,       Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.CalendarBackgroundVetoedDates,       Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate,      accent.darker());
+
+        /* ===== 4. Colores de TEXTO ====================================== */
+        s.setColor(DatePickerSettings.DateArea.CalendarTextNormalDates,             txtLight);        // números
+        s.setColor(DatePickerSettings.DateArea.CalendarTextWeekdays,                txtLight);        // dom-lun-…
+        s.setColor(DatePickerSettings.DateArea.TextMonthAndYearMenuLabels,          txtLight);
+        s.setColor(DatePickerSettings.DateArea.TextMonthAndYearNavigationButtons,   txtLight);
+        s.setColor(DatePickerSettings.DateArea.TextTodayLabel,                      accent);
+        s.setColor(DatePickerSettings.DateArea.TextClearLabel,                      accent);          // «Borrar»
+        s.setColor(DatePickerSettings.DateArea.CalendarBorderSelectedDate,          accent);
+        // -- 1. Fila de cabeceras: mismo fondo oscuro -----------------------
+        s.setColor(DatePickerSettings.DateArea.BackgroundTopLeftLabelAboveWeekNumbers, Color.BLACK);
+
+        // -- 2. Color cuando pasas el ratón por encima de cualquier etiqueta
+        s.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, Color.black);
+
+        // -- 3. Desactivar o recolorear TODAS las líneas/bordes azules -------
+        s.setBorderPropertiesList(new ArrayList<>());        // sin rejilla interna
+        s.setBorderCalendarPopup(BorderFactory.createLineBorder(Color.BLACK));
+        s.setBorderPropertiesList(new ArrayList<CalendarBorderProperties>());
+
+        s.setBorderCalendarPopup(BorderFactory.createLineBorder(Color.BLACK)); // marco exterior oscuro
+        /* ===== 6. Crear el picker y retocar sus sub-componentes ========= */
+        DatePicker picker = new DatePicker(s);
+
+        // Caja de texto
+        JTextField tf = picker.getComponentDateTextField();
+        tf.setOpaque(true);
+        tf.setBackground(bgBase);
+        tf.setForeground(txtLight);
+        tf.setCaretColor(txtLight);
+        tf.setBorder(BorderFactory.createLineBorder(accent));
+
+        // Botón con los tres puntos (toggle)
+        JButton toggle = picker.getComponentToggleCalendarButton();
+        toggle.setBackground(bgBase);
+        toggle.setForeground(txtLight);
+        toggle.setBorder(null);
+
+        /* ===== 7. Tipografías coherentes con tu guía de estilo ========== */
+        Font title = new Font("Aharoni", Font.BOLD, 18);
+        Font body  = new Font("Aptos Mono", Font.PLAIN, 14);
+
+        s.setFontCalendarWeekdayLabels(title);
+        s.setFontMonthAndYearMenuLabels(title);
+        s.setFontMonthAndYearNavigationButtons(title);
+        s.setFontCalendarDateLabels(body);
+        tf.setFont(body);
+
+        return picker;
     }
 
     /**

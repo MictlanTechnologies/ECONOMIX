@@ -1,5 +1,7 @@
 package org.economix.ventana.vista;
 
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.economix.util.IconUtil;
 import org.economix.ventana.vista.Login;
 import org.economix.ventana.vista.Registro;
@@ -21,6 +23,8 @@ public class PantallaInicio extends JFrame {
     private final JLabel background = new JLabel();
     private final JLabel logoLabel  = new JLabel();
     private EmbeddedMediaPlayerComponent mediaPlayer; // para video opcional
+    private final JButton themeBtn = new JButton("\uD83C\uDF19"); // 🌙 por defecto
+    private boolean darkMode = true;
 
     public PantallaInicio(SessionFactory sf) {
         super("ECONOMIX");
@@ -31,10 +35,14 @@ public class PantallaInicio extends JFrame {
     }
 
     private void construirUI() {
+        setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
         background.setLayout(new GridBagLayout());
-        add(background);
+        add(background, BorderLayout.CENTER);
+        JPanel top = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        top.add(themeBtn);
+        add(top, BorderLayout.NORTH);
 
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(10, 10, 10, 10);
@@ -68,6 +76,7 @@ public class PantallaInicio extends JFrame {
 
         iniciarBtn.addActionListener(e -> mostrarLogin());
         registrarBtn.addActionListener(e -> abrirRegistro());
+        themeBtn.addActionListener(e -> toggleTheme());
 
         setLocationRelativeTo(null);
     }
@@ -90,7 +99,19 @@ public class PantallaInicio extends JFrame {
         dispose();
         new Registro(null, sf).setVisible(true);
     }
-
+    private void toggleTheme() {
+        if (darkMode) {
+            FlatMacLightLaf.setup();
+            themeBtn.setText("\u2600"); // ☀
+        } else {
+            FlatMacDarkLaf.setup();
+            themeBtn.setText("\uD83C\uDF19"); // 🌙
+        }
+        darkMode = !darkMode;
+        for (Window w : Window.getWindows()) {
+            SwingUtilities.updateComponentTreeUI(w);
+        }
+    }
     /** Establece un GIF como fondo de la pantalla. */
     public void setBackgroundGif(String path) {
         background.setIcon(new ImageIcon("ECONOMIX_background.gif"));

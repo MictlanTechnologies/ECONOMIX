@@ -1,6 +1,9 @@
 package org.economix.ventana.model;
 
 // Importaciones necesarias para conexión a Hibernate, interfaz gráfica y tipos de datos.
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.optionalusertools.CalendarBorderProperties;
 import org.economix.model.ingresos.Ingresos;
 import org.economix.model.usuario.Usuario;
 import org.economix.ventana.vista.GestorCatalogosSwing;
@@ -9,11 +12,13 @@ import org.hibernate.Session;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,27 +29,13 @@ import java.util.List;
 public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
 
     /* ======= Campos del formulario de ingreso ======= */
-
-    // Campo para descripción del ingreso (ej: "Pago quincenal").
     private final JTextField descripcionTxt = new JTextField(15);
-
-    // Campo para el monto numérico del ingreso.
     private final JTextField montoTxt = new JTextField(10);
-
-    // Campo para la fecha del ingreso en formato yyyy-MM-dd.
-    private final JTextField fechaTxt = new JTextField(10);
-
-    // Campo para especificar la periodicidad del ingreso (ej: "quincenal").
+    private final DatePicker fechaPicker = createDarkDatePicker();
     private final JTextField periodoTxt = new JTextField(12);
-
-    // Casilla de verificación que permite indicar si este ingreso es recurrente.
     private final JCheckBox recurrenteChk = new JCheckBox("Ingreso recurrente");
-
-    // Lista visual con los ingresos recurrentes guardados anteriormente.
     private final DefaultListModel<IngRec> recurrentesModelo = new DefaultListModel<>();
     private final JList<IngRec> recurrentesLista = new JList<>(recurrentesModelo);
-
-    // Listener que se ejecuta cuando hay cambios en los datos (ej. para actualizar gráficas).
     private Runnable cambioListener;
 
     /** Establece una función que se ejecutará cada vez que se guarde o elimine un ingreso. */
@@ -76,7 +67,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
                         descripcionTxt.setText(rec.descripcion());
                         montoTxt.setText(rec.monto().toPlainString());
                         periodoTxt.setText(rec.periodo());
-                        fechaTxt.requestFocus();
+                        fechaPicker.requestFocus();
                     }
                 }
             }
@@ -129,7 +120,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
         idSeleccionado = i.getId();
         descripcionTxt.setText(i.getDescripcionIngreso());
         montoTxt.setText(i.getMontoIngreso().toPlainString());
-        fechaTxt.setText(i.getFechaIngresos().toString());
+        fechaPicker.setDate(i.getFechaIngresos().toLocalDate());
         periodoTxt.setText(i.getPeriodicidadIngreso());
     }
 
@@ -138,11 +129,11 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
     public void guardar() {
         String desc = descripcionTxt.getText().trim();
         String mon  = montoTxt.getText().trim();
-        String fec  = fechaTxt.getText().trim();
+        LocalDate fec = fechaPicker.getDate();
         String per  = periodoTxt.getText().trim();
 
         // Validación mínima
-        if (mon.isEmpty() || fec.isEmpty()) {
+        if (mon.isEmpty() || fec == null) {
             JOptionPane.showMessageDialog(this,
                     "Monto y fecha son obligatorios",
                     "Datos incompletos", JOptionPane.WARNING_MESSAGE);
@@ -154,7 +145,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
         Date fecha;
         try {
             monto = new BigDecimal(mon);
-            fecha = Date.valueOf(LocalDate.parse(fec));
+            fecha = Date.valueOf(fec);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Monto o fecha con formato inválido",
@@ -227,7 +218,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
     public void limpiarCampos() {
         descripcionTxt.setText("");
         montoTxt.setText("");
-        fechaTxt.setText("");
+        fechaPicker.clear();
         periodoTxt.setText("");
         recurrenteChk.setSelected(false);
         idSeleccionado = null;
@@ -272,8 +263,8 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Monto:"), gc);
         gc.gridx = 1; p.add(montoTxt, gc); y++;
 
-        gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Fecha (yyyy-MM-dd):"), gc);
-        gc.gridx = 1; p.add(fechaTxt, gc); y++;
+        gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Fecha:"), gc);
+        gc.gridx = 1; p.add(fechaPicker, gc); y++;
 
         gc.gridx = 0; gc.gridy = y; p.add(new JLabel("Periodo:"), gc);
         gc.gridx = 1; p.add(periodoTxt, gc); y++;
@@ -305,6 +296,81 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
         return p;
     }
 
+    /** Crea un selector de fecha en modo oscuro con formato yyyy-MM-dd. */
+    private static DatePicker createDarkDatePicker() {
+        /* ===== 1. Paleta (mismos tonos que tu GUI) ====================== */
+        Color bgBase   = new Color(0x2E2E2C);   // fondo principal (casi negro)
+        Color bgDark   = bgBase.darker();       // un poco más oscuro
+        Color accent   = new Color(0xB6AC94);   // resaltados y bordes
+        Color txtLight = new Color(0xF3F1E4);   // texto muy claro
+        Color txtMid   = new Color(0xD5D0C3);   // texto secundario
+
+        /* ===== 2. Configuración general del DatePicker ================== */
+        DatePickerSettings s = new DatePickerSettings();
+        s.setAllowKeyboardEditing(false);
+        s.setAllowEmptyDates(true);             // importante para que «Borrar» pueda activarse
+        s.setFormatForDatesCommonEra("yyyy-MM-dd");
+        s.setFormatForDatesBeforeCommonEra("yyyy-MM-dd");
+
+        /* ===== 3. Colores de FONDO ====================================== */
+        s.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel,      Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels,    Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearNavigationButtons, Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel,                Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.BackgroundClearLabel,                Color.BLACK);          // botón Borrar
+        s.setColor(DatePickerSettings.DateArea.CalendarBackgroundNormalDates,       Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.CalendarBackgroundVetoedDates,       Color.BLACK);
+        s.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate,      accent.darker());
+
+        /* ===== 4. Colores de TEXTO ====================================== */
+        s.setColor(DatePickerSettings.DateArea.CalendarTextNormalDates,             txtLight);        // números
+        s.setColor(DatePickerSettings.DateArea.CalendarTextWeekdays,                txtLight);        // dom-lun-…
+        s.setColor(DatePickerSettings.DateArea.TextMonthAndYearMenuLabels,          txtLight);
+        s.setColor(DatePickerSettings.DateArea.TextMonthAndYearNavigationButtons,   txtLight);
+        s.setColor(DatePickerSettings.DateArea.TextTodayLabel,                      accent);
+        s.setColor(DatePickerSettings.DateArea.TextClearLabel,                      accent);          // «Borrar»
+        s.setColor(DatePickerSettings.DateArea.CalendarBorderSelectedDate,          accent);
+        // -- 1. Fila de cabeceras: mismo fondo oscuro -----------------------
+        s.setColor(DatePickerSettings.DateArea.BackgroundTopLeftLabelAboveWeekNumbers, Color.BLACK);
+
+        // -- 2. Color cuando pasas el ratón por encima de cualquier etiqueta
+        s.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, Color.black);
+
+        // -- 3. Desactivar o recolorear TODAS las líneas/bordes azules -------
+        s.setBorderPropertiesList(new ArrayList<>());        // sin rejilla interna
+        s.setBorderCalendarPopup(BorderFactory.createLineBorder(Color.BLACK));
+        s.setBorderPropertiesList(new ArrayList<CalendarBorderProperties>());
+
+        s.setBorderCalendarPopup(BorderFactory.createLineBorder(Color.BLACK)); // marco exterior oscuro
+        /* ===== 6. Crear el picker y retocar sus sub-componentes ========= */
+        DatePicker picker = new DatePicker(s);
+
+        // Caja de texto
+        JTextField tf = picker.getComponentDateTextField();
+        tf.setOpaque(true);
+        tf.setBackground(bgBase);
+        tf.setForeground(txtLight);
+        tf.setCaretColor(txtLight);
+        tf.setBorder(BorderFactory.createLineBorder(accent));
+
+        // Botón con los tres puntos (toggle)
+        JButton toggle = picker.getComponentToggleCalendarButton();
+        toggle.setBackground(bgBase);
+        toggle.setForeground(txtLight);
+        toggle.setBorder(null);
+
+        /* ===== 7. Tipografías coherentes con tu guía de estilo ========== */
+        Font title = new Font("Aharoni", Font.BOLD, 18);
+        Font body  = new Font("Aptos Mono", Font.PLAIN, 14);
+
+        s.setFontCalendarWeekdayLabels(title);
+        s.setFontMonthAndYearMenuLabels(title);
+        s.setFontMonthAndYearNavigationButtons(title);
+        s.setFontCalendarDateLabels(body);
+        tf.setFont(body);
+
+        return picker;
+    }
     /** Muestra un mensaje explicativo al usuario sobre cómo usar el formulario de ingresos. */
     private void mostrarInfo() {
         JOptionPane.showMessageDialog(this,

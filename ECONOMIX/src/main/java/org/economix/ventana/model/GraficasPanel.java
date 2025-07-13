@@ -4,6 +4,7 @@ package org.economix.ventana.model;
 import org.economix.model.gastos.Gastos;
 import org.economix.model.ingresos.Ingresos;
 import org.economix.model.usuario.Usuario;
+import org.economix.util.IconUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jfree.chart.ChartFactory;
@@ -31,17 +32,28 @@ import java.util.List;
 public class GraficasPanel extends JPanel {
     private final SessionFactory sf;  // Fábrica de sesiones Hibernate para acceder a BD
     private final Usuario usuario;    // Usuario autenticado cuyos datos se grafican
-
+    private final JPanel graficas = new JPanel(new GridLayout(1, 2));
     /**
      * Constructor principal que inicializa el panel y dibuja los gráficos.
      *
      * @param sf fábrica de sesiones Hibernate.
      * @param usuario usuario autenticado.
      */
+
     public GraficasPanel(SessionFactory sf, Usuario usuario){
         this.sf = sf;
         this.usuario = usuario;
-        setLayout(new GridLayout(1, 2));  // Panel dividido en dos columnas para mostrar gráficos
+        setLayout(new BorderLayout());
+
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel title = new JLabel("ECONOMIX");
+        title.setFont(new Font("Roboto", Font.BOLD, 16));
+        JLabel logo = new JLabel(IconUtil.getAppIconMini());
+        header.add(title);
+        header.add(logo);
+        add(header, BorderLayout.NORTH);
+
+        add(graficas, BorderLayout.CENTER); // Panel dividido en dos columnas para mostrar gráficos
         actualizar();                     // Cargar gráficos al iniciar
     }
 
@@ -50,11 +62,11 @@ public class GraficasPanel extends JPanel {
      * Puede llamarse explícitamente cada vez que se desea refrescar los datos.
      */
     public void actualizar(){
-        removeAll();              // Limpiar gráficos anteriores
-        add(crearPie());         // Agregar gráfico de pastel
-        add(crearBarra());       // Agregar gráfico de barras
-        revalidate();            // Validar cambios visuales
-        repaint();               // Redibujar panel
+        graficas.removeAll();              // Limpiar gráficos anteriores
+        graficas.add(crearPie());         // Agregar gráfico de pastel
+        graficas.add(crearBarra());       // Agregar gráfico de barras
+        graficas.revalidate();            // Validar cambios visuales
+        graficas.repaint();              // Redibujar panel
     }
 
     /**

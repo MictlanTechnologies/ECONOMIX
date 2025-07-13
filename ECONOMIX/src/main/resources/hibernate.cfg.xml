@@ -29,5 +29,6 @@
 		<mapping class="org.economix.model.ingresos.Ingresos"/>
 		<mapping class="org.economix.model.ingresos.conceptoIngresos"/>
 		<mapping class="org.economix.model.presupuesto.Presupuesto"/>
+		<mapping class="org.economix.model.ahorro.Ahorro"/>
 	</session-factory>
 </hibernate-configuration>

@@ -222,6 +222,30 @@ CREATE INDEX `idx_presupuesto_usuario` ON `economix`.`tbl_presupuesto` (`idUsuar
 
 SHOW WARNINGS;
 
+-- -----------------------------------------------------
+-- Table `economix`.`tbl_ahorro`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `economix`.`tbl_ahorro` (
+  `idAhorro` INT NOT NULL AUTO_INCREMENT,
+  `nombreObjetivo` VARCHAR(100) NOT NULL,
+  `descripcionObjetivo` TEXT NULL DEFAULT NULL,
+  `meta` DECIMAL(10,2) NOT NULL,
+  `montoAhorrado` DECIMAL(10,2) NOT NULL,
+  `idUsuario` INT NOT NULL,
+  PRIMARY KEY (`idAhorro`),
+  CONSTRAINT `fk_ahorro_usuario`
+    FOREIGN KEY (`idUsuario`)
+    REFERENCES `economix`.`tbl_usuario` (`idUsuario`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+CREATE INDEX `idx_ahorro_usuario` ON `economix`.`tbl_ahorro` (`idUsuario` ASC) VISIBLE;
+
+SHOW WARNINGS;
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

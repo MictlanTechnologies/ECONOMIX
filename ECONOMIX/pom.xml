@@ -56,8 +56,14 @@
 
         <dependency>
             <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-extras</artifactId>
+            <version>3.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
-            <version>3.0</version>
+            <version>3.3</version>
         </dependency>
 
         <dependency>
@@ -73,6 +79,12 @@
             <version>4.7.1</version>
         </dependency>
 
+        <!-- Selector de fechas para Swing -->
+        <dependency>
+            <groupId>com.github.lgooddatepicker</groupId>
+            <artifactId>LGoodDatePicker</artifactId>
+            <version>11.2.1</version>
+        </dependency>
     </dependencies>
 
 

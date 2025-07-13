@@ -2,8 +2,6 @@
 package org.economix.ventana.inicio;
 
 // Importaciones generales: tema visual, utilidades Hibernate y vistas Swing
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import org.economix.util.HibernateUtil;
 import org.economix.ventana.vista.PantallaInicio;

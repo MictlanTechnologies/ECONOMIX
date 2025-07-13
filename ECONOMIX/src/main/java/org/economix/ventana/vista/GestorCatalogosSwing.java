@@ -1,6 +1,7 @@
 package org.economix.ventana.vista;
 
 import org.economix.model.usuario.Usuario;
+import org.economix.util.IconUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -48,6 +49,15 @@ public abstract class GestorCatalogosSwing<T> extends JPanel implements GenericS
         // Ocultar la columna de la clave primaria
         tabla.getColumnModel().removeColumn(tabla.getColumnModel().getColumn(0));
         setLayout(new BorderLayout(5,5));
+
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel title = new JLabel("ECONOMIX");
+        title.setFont(new Font("Roboto", Font.BOLD, 16));
+        JLabel logo = new JLabel(IconUtil.getAppIconMini());
+        header.add(title);
+        header.add(logo);
+        add(header, BorderLayout.NORTH);
+
         add(new JScrollPane(tabla), BorderLayout.CENTER);
 
         /* Listener para doble‑clic y selección */
