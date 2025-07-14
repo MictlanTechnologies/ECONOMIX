@@ -85,6 +85,13 @@
             <artifactId>LGoodDatePicker</artifactId>
             <version>11.2.1</version>
         </dependency>
+
+        <!-- Temas adicionales de FlatLaf -->
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-intellij-themes</artifactId>
+            <version>3.3</version>
+        </dependency>
     </dependencies>
 
 

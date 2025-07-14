@@ -1,6 +1,7 @@
 package org.economix.ventana.model;
 
 import org.economix.model.ahorro.Ahorro;
+import org.economix.model.ingresos.Ingresos;
 import org.economix.model.usuario.Usuario;
 import org.economix.ventana.vista.GestorCatalogosSwing;
 import org.hibernate.Session;
@@ -20,12 +21,19 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
     private final JTextField nombreTxt = new JTextField(15);
     private final JTextField descripcionTxt = new JTextField(15);
     private final JTextField metaTxt = new JTextField(10);
-    private final JTextField ahorradoTxt = new JTextField(10);
+    private final JComboBox<Ingresos> ahorradoCmb = new JComboBox<>();
     private final JProgressBar barra = new JProgressBar(0, 100);
+
+    // Permite notificar a otros paneles tras vincular un ingreso
+    private Runnable cambioListener;
+
+    /** Registra un callback a ejecutar cuando se modifiquen los ingresos */
+    public void setCambioListener(Runnable r) { this.cambioListener = r; }
 
     public AhorroPanel(SessionFactory sf, Usuario usuario) {
         super(sf, usuario, new String[]{"Objetivo", "Meta", "Ahorrado", "%"});
         barra.setStringPainted(true);
+        cargarIngresos();
         add(construirFormulario(), BorderLayout.EAST);
         cargarTabla();
     }
@@ -61,7 +69,6 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
         nombreTxt.setText(a.getNombreObjetivo());
         descripcionTxt.setText(a.getDescripcionObjetivo());
         metaTxt.setText(a.getMeta().toPlainString());
-        ahorradoTxt.setText(a.getMontoAhorrado().toPlainString());
         actualizarBarra(a);
     }
 
@@ -70,7 +77,6 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
         String nom = nombreTxt.getText().trim();
         String des = descripcionTxt.getText().trim();
         String met = metaTxt.getText().trim();
-        String ahor = ahorradoTxt.getText().trim();
         if (nom.isEmpty() || met.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Nombre y meta son obligatorios",
@@ -78,10 +84,8 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
             return;
         }
         BigDecimal metaVal;
-        BigDecimal ahorradoVal = BigDecimal.ZERO;
         try {
             metaVal = new BigDecimal(met);
-            if (!ahor.isEmpty()) ahorradoVal = new BigDecimal(ahor);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Formato numérico inválido",
@@ -89,19 +93,18 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
             return;
         }
         final Ahorro[] saved = new Ahorro[1];
-        BigDecimal finalAhorradoVal = ahorradoVal;
         dentroDeTransaccion(s -> {
             Ahorro a;
             if (idSeleccionado == null) {
                 a = new Ahorro();
                 a.setUsuario(usuario);
+                a.setMontoAhorrado(BigDecimal.ZERO);
             } else {
                 a = s.get(Ahorro.class, idSeleccionado);
             }
             a.setNombreObjetivo(nom);
             a.setDescripcionObjetivo(des);
             a.setMeta(metaVal);
-            a.setMontoAhorrado(finalAhorradoVal);
             s.persist(a);
             saved[0] = a;
         });
@@ -134,7 +137,6 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
         nombreTxt.setText("");
         descripcionTxt.setText("");
         metaTxt.setText("");
-        ahorradoTxt.setText("");
         idSeleccionado = null;
         barra.setValue(0);
         barra.setString("0% ahorrado");
@@ -159,7 +161,7 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
         gc.gridx=1; p.add(metaTxt, gc); y++;
 
         gc.gridx=0; gc.gridy=y; p.add(new JLabel("Ahorrado:"), gc);
-        gc.gridx=1; p.add(ahorradoTxt, gc); y++;
+        gc.gridx=1; p.add(ahorradoCmb, gc); y++;
 
         gc.gridx=0; gc.gridy=y; gc.gridwidth=2; p.add(barra, gc); y++;
         gc.gridwidth=1;
@@ -168,13 +170,66 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
         JButton guardar = new JButton("Guardar");
         JButton eliminar = new JButton("Eliminar");
         JButton limpiar = new JButton("Limpiar");
+        JButton vincular = new JButton("Vincular");
+        JButton ayudaBtn = new JButton("Ayuda");
+
         guardar.addActionListener(e -> guardar());
         eliminar.addActionListener(e -> eliminar());
         limpiar.addActionListener(e -> limpiarCampos());
-        botones.add(guardar); botones.add(eliminar); botones.add(limpiar);
+        vincular.addActionListener(e -> vincularIngreso());
+        ayudaBtn.addActionListener(e -> mostrarInfo());
+
+        botones.add(guardar);
+        botones.add(eliminar);
+        botones.add(limpiar);
+        botones.add(vincular);
+        botones.add(ayudaBtn);
         gc.gridx=0; gc.gridy=y; gc.gridwidth=2; gc.anchor=GridBagConstraints.CENTER;
         p.add(botones, gc);
         return p;
+    }
+
+    private void cargarIngresos() {
+        ahorradoCmb.removeAllItems();
+        try (Session s = sf.openSession()) {
+            List<Ingresos> lista = s.createQuery(
+                            "from Ingresos where usuario.id = :uid", Ingresos.class)
+                    .setParameter("uid", usuario.getId())
+                    .list();
+            for (Ingresos i : lista) ahorradoCmb.addItem(i);
+        }
+    }
+
+    private void vincularIngreso() {
+        if (idSeleccionado == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Selecciona un objetivo en la tabla",
+                    "Sin selección", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Ingresos ingreso = (Ingresos) ahorradoCmb.getSelectedItem();
+        if (ingreso == null) return;
+
+        dentroDeTransaccion(s -> {
+            Ahorro a = s.get(Ahorro.class, idSeleccionado);
+            Ingresos ing = s.get(Ingresos.class, ingreso.getId());
+            if (a != null && ing != null) {
+                a.setMontoAhorrado(a.getMontoAhorrado().add(ing.getMontoIngreso()));
+                ing.setMontoIngreso(BigDecimal.ZERO);
+                s.persist(a);
+                s.persist(ing);
+                actualizarBarra(a);
+            }
+        });
+        cargarIngresos();
+        cargarTabla();
+        if (cambioListener != null) cambioListener.run();
+    }
+
+    /** Refresca combo y tabla, usado al volver a la sección. */
+    public void actualizar() {
+        cargarIngresos();
+        cargarTabla();
     }
 
     private void actualizarBarra(Ahorro a) {
@@ -183,5 +238,14 @@ public class AhorroPanel extends GestorCatalogosSwing<Ahorro> {
                         .movePointRight(2).intValue();
         barra.setValue(pct);
         barra.setString(pct + "% ahorrado");
+    }
+
+    /** Muestra instrucciones básicas de uso del panel. */
+    private void mostrarInfo() {
+        JOptionPane.showMessageDialog(this,
+                "Selecciona un objetivo, elige un ingreso y presiona Vincular " +
+                        "para sumarlo al monto ahorrado.",
+                "Ayuda",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }

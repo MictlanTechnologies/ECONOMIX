@@ -3,7 +3,6 @@ package org.economix.ventana.model;
 // Importaciones de clases de modelo y utilidades necesarias
 import org.economix.model.presupuesto.Presupuesto;
 import org.economix.model.usuario.Usuario;
-import org.economix.sql.hibernateimpl.presupuesto.PresupuestoHiberImpl;
 import org.economix.model.gastos.Gastos;
 import org.economix.model.ingresos.Ingresos;
 import org.economix.ventana.vista.GestorCatalogosSwing;
@@ -39,7 +38,6 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
 
     // Barras de progreso para visualizar el uso del presupuesto y el total de ingresos vs gastos
     private final JProgressBar barra      = new JProgressBar(0, 100);
-    private final JProgressBar barraTotal = new JProgressBar(0, 100);
 
     // Variables para evitar mostrar advertencias múltiples al repetir porcentajes
     private int ultimoPctCategoria = -1;
@@ -58,15 +56,12 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
     public PresupuestoPanel(SessionFactory sf, Usuario u) {
         super(sf, u, new String[]{"Categoría", "Límite", "Gastado", "%"});
         barra.setStringPainted(true);
-        barraTotal.setStringPainted(true);
         cargarCombos(); // Cargar datos en los combos desplegables
         add(construirFormulario(), BorderLayout.EAST); // Lado derecho: formulario
         JPanel barras = new JPanel(new GridLayout(2,1));
         barras.add(barra);       // Barra para categoría actual
-        barras.add(barraTotal);  // Barra para resumen total
         add(barras, BorderLayout.SOUTH); // Lado inferior
         cargarTabla();           // Llenar la tabla con presupuestos del mes actual
-        actualizarBarraTotal();  // Mostrar el uso total de ingresos
     }
 
     /**
@@ -110,7 +105,6 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
                     .list();
             refrescarTabla(lista); // Llenar tabla Swing
         }
-        actualizarBarraTotal(); // Recalcular barra total
     }
 
     /**
@@ -142,6 +136,16 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         BigDecimal max = BigDecimal.valueOf(limiteSld.getValue());
         BigDecimal usado = gastoSel.getMontoGastos();
 
+        // Verifica que el ingreso tenga suficiente saldo
+        BigDecimal restante = ingresoSel.getMontoIngreso().subtract(usado);
+        if (restante.compareTo(BigDecimal.ZERO) < 0) {
+            JOptionPane.showMessageDialog(this,
+                    "El gasto seleccionado supera el ingreso disponible",
+                    "Saldo insuficiente",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (max.compareTo(BigDecimal.ZERO) <= 0) {
             JOptionPane.showMessageDialog(this,
                     "El límite debe ser mayor que cero",
@@ -168,6 +172,14 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
                 p.setMontoGastado(usado);
                 p.setMes(hoy.getMonthValue());
                 p.setAnio(hoy.getYear());
+
+                // Descontar el gasto del ingreso seleccionado
+                Ingresos ingBD = s.get(Ingresos.class, ingresoSel.getId());
+                if (ingBD != null) {
+                    ingBD.setMontoIngreso(ingBD.getMontoIngreso().subtract(usado));
+                    s.merge(ingBD);
+                }
+
             } else {
                 p = s.get(Presupuesto.class, idSeleccionado);
                 p.setMontoGastado(usado);
@@ -180,7 +192,6 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
 
         // Actualizar interfaz
         if (saved[0] != null) actualizarBarra(saved[0]);
-        actualizarBarraTotal();
         limpiarCampos();
         actualizar();
         if (cambioListener != null) cambioListener.run();
@@ -270,8 +281,7 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
         JOptionPane.showMessageDialog(this,
                 "Seleccione la categoría y vincule un gasto registrado con un ingreso.\n" +
                         "El deslizador indica cuánto dinero hay disponible y no permite exceder esa cantidad.\n" +
-                        "La barra superior muestra qué porcentaje has usado y cambia de color si te acercas al límite.\n" +
-                        "La segunda barra muestra el porcentaje total de ingresos usados.",
+                        "La barra superior muestra qué porcentaje has usado y cambia de color si te acercas al límite.\n",
                 "Ayuda",
                 JOptionPane.INFORMATION_MESSAGE);
     }
@@ -366,32 +376,4 @@ public class PresupuestoPanel extends GestorCatalogosSwing<Presupuesto> {
                         pct < 90 ? Color.ORANGE : Color.RED);
     }
 
-    /**
-     * Calcula el porcentaje de ingresos gastados en total y actualiza la barra inferior.
-     */
-    private void actualizarBarraTotal() {
-        BigDecimal ingTotal;
-        BigDecimal gasTotal;
-        try (Session s = sf.openSession()) {
-            ingTotal = s.createQuery(
-                            "select coalesce(sum(i.montoIngreso),0) from Ingresos i where i.usuario.id = :uid", BigDecimal.class)
-                    .setParameter("uid", usuario.getId()).uniqueResult();
-            gasTotal = s.createQuery(
-                            "select coalesce(sum(g.montoGastos),0) from Gastos g where g.usuario.id = :uid", BigDecimal.class)
-                    .setParameter("uid", usuario.getId()).uniqueResult();
-        }
-
-        if (ingTotal.compareTo(BigDecimal.ZERO) == 0) {
-            barraTotal.setValue(0);
-            barraTotal.setString("Sin ingresos");
-            return;
-        }
-
-        int pct = gasTotal.divide(ingTotal, 2, RoundingMode.HALF_UP).movePointRight(2).intValue();
-        barraTotal.setValue(pct);
-        barraTotal.setString(pct + "% gastado");
-        barraTotal.setForeground(
-                pct < 70 ? Color.GREEN :
-                        pct < 90 ? Color.ORANGE : Color.RED);
-    }
 }

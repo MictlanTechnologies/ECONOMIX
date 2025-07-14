@@ -1,5 +1,8 @@
 package org.economix.ventana.vista;
 
+import com.formdev.flatlaf.intellijthemes.FlatArcIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatGradiantoDarkFuchsiaIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatGradiantoNatureGreenIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.economix.util.IconUtil;
@@ -25,6 +28,8 @@ public class PantallaInicio extends JFrame {
     private EmbeddedMediaPlayerComponent mediaPlayer; // para video opcional
     private final JButton themeBtn = new JButton("\uD83C\uDF19"); // 🌙 por defecto
     private boolean darkMode = true;
+    private int themeMode = 0; // 0 oscuro, 1 claro, 2 paleta
+
 
     public PantallaInicio(SessionFactory sf) {
         super("ECONOMIX");
@@ -100,14 +105,25 @@ public class PantallaInicio extends JFrame {
         new Registro(null, sf).setVisible(true);
     }
     private void toggleTheme() {
-        if (darkMode) {
-            FlatMacLightLaf.setup();
-            themeBtn.setText("\u2600"); // ☀
-        } else {
-            FlatMacDarkLaf.setup();
-            themeBtn.setText("\uD83C\uDF19"); // 🌙
+        themeMode = (themeMode + 1) % 4;
+        switch (themeMode) {
+            case 0 -> {
+                FlatMacDarkLaf.setup();
+                themeBtn.setText("\uD83C\uDF19"); // 🌙
+            }
+            case 1 -> {
+                FlatMacLightLaf.setup();
+                themeBtn.setText("\u2600"); // ☀
+            }
+            case 2 -> {
+                FlatGradiantoDarkFuchsiaIJTheme.setup();
+                themeBtn.setText("\uD83D\uDC7E"); // 👾
+            }
+            default -> {
+                FlatGradiantoNatureGreenIJTheme.setup();
+                themeBtn.setText("\uD83C\uDF43"); // 🍃
+            }
         }
-        darkMode = !darkMode;
         for (Window w : Window.getWindows()) {
             SwingUtilities.updateComponentTreeUI(w);
         }

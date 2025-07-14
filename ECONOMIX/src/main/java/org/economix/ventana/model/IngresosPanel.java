@@ -342,6 +342,7 @@ public class IngresosPanel extends GestorCatalogosSwing<Ingresos> {
         s.setBorderPropertiesList(new ArrayList<CalendarBorderProperties>());
 
         s.setBorderCalendarPopup(BorderFactory.createLineBorder(Color.BLACK)); // marco exterior oscuro
+
         /* ===== 6. Crear el picker y retocar sus sub-componentes ========= */
         DatePicker picker = new DatePicker(s);
 

@@ -1,5 +1,6 @@
 package org.economix.ventana.vista;
 
+import com.formdev.flatlaf.intellijthemes.*;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.economix.model.usuario.Usuario;
@@ -25,6 +26,7 @@ public class PrincipalVentana extends JFrame {
     private final PresupuestoPanel presupuestoPanel;
     private final JButton themeBtn = new JButton("\uD83C\uDF19"); // 🌙 por defecto
     private boolean darkMode = true;
+    private int themeMode = 0; // 0 oscuro, 1 claro, 2 paleta
 
     public PrincipalVentana(SessionFactory sf, Usuario usuarioActual) {
         super("ECONOMIX – Bienvenido " + usuarioActual.getPerfilUsuario());
@@ -83,10 +85,13 @@ public class PrincipalVentana extends JFrame {
         Runnable refrescar = () -> {
             graficasPanel.actualizar();
             presupuestoPanel.actualizar();
+            ingresosPanel.cargarTabla();
+            ahorroPanel.actualizar();
         };
         gastosPanel.setCambioListener(refrescar);
         ingresosPanel.setCambioListener(refrescar);
         presupuestoPanel.setCambioListener(refrescar);
+        ahorroPanel.setCambioListener(refrescar);
 
         /* ---------- Eventos ---------- */
         gastosBtn.addActionListener(e -> {
@@ -98,7 +103,7 @@ public class PrincipalVentana extends JFrame {
             card.show(cardPanel, "Ingresos");
         });
         ahorroBtn.addActionListener(e -> {
-            ahorroPanel.cargarTabla();
+            ahorroPanel.actualizar();
             card.show(cardPanel, "Ahorro");
         });
         presupBtn.addActionListener(e -> {
@@ -114,12 +119,24 @@ public class PrincipalVentana extends JFrame {
     }
 
     private void toggleTheme() {
-        if (darkMode) {
-            FlatMacLightLaf.setup();
-            themeBtn.setText("\u2600"); // ☀
-        } else {
-            FlatMacDarkLaf.setup();
-            themeBtn.setText("\uD83C\uDF19"); // 🌙
+        themeMode = (themeMode + 1) % 4;
+        switch (themeMode) {
+            case 0 -> {
+                FlatMacDarkLaf.setup();
+                themeBtn.setText("\uD83C\uDF19"); // 🌙
+            }
+            case 1 -> {
+                FlatMacLightLaf.setup();
+                themeBtn.setText("\u2600"); // ☀
+            }
+            case 2 -> {
+                FlatGradiantoDarkFuchsiaIJTheme.setup();
+                themeBtn.setText("\uD83D\uDC7E"); // 👾
+            }
+            default -> {
+                FlatGradiantoNatureGreenIJTheme.setup();
+                themeBtn.setText("\uD83C\uDF43"); // 🍃
+            }
         }
         darkMode = !darkMode;
         for (Window w : Window.getWindows()) {
